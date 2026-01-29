@@ -32,8 +32,18 @@ export function Footer() {
             <span>Digital Studio</span>
           </motion.a>
 
-          {/* Right: Copyright */}
-          <p className="text-sm text-muted">© {currentYear} All rights reserved</p>
+          {/* Right: Links & Copyright */}
+          <div className="text-center md:text-right">
+            <div className="flex items-center gap-4 text-sm text-muted mb-2">
+              <a href="/privacy" className="hover:text-foreground transition-colors">
+                Privacy
+              </a>
+              <a href="/terms" className="hover:text-foreground transition-colors">
+                Terms
+              </a>
+            </div>
+            <p className="text-sm text-muted">© {currentYear} All rights reserved</p>
+          </div>
         </div>
       </div>
     </footer>
