@@ -1,0 +1,63 @@
+---
+import DisciplineTag from './DisciplineTag.astro';
+
+interface Props {
+  date: Date;
+  title: string;
+  discipline: 'FILM' | 'PHOTO' | 'CODE';
+  href: string;
+}
+
+const { date, title, discipline, href } = Astro.props;
+const monthShort = date.toLocaleString('en-US', { month: 'short' }).toUpperCase();
+const year = date.getFullYear();
+---
+
+<li class="news-item">
+  <a href={href} class="news-link">
+    <span class="news-date label">{monthShort} {year}</span>
+    <span class="news-title">{title}</span>
+    <DisciplineTag discipline={discipline} />
+  </a>
+</li>
+
+<style>
+  .news-item {
+    list-style: none;
+    border-top: 1px solid var(--border);
+  }
+  .news-link {
+    display: grid;
+    grid-template-columns: 96px 1fr auto;
+    gap: 1rem;
+    align-items: center;
+    padding: 1rem 0;
+    transition: color 150ms ease-out;
+  }
+  .news-link:hover .news-title,
+  .news-link:focus-visible .news-title {
+    color: var(--accent);
+  }
+  .news-date {
+    color: var(--fg-muted);
+    letter-spacing: 0.14em;
+  }
+  .news-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--fg);
+    transition: color 150ms ease-out;
+  }
+  @media (min-width: 640px) {
+    .news-title {
+      font-size: 16px;
+    }
+  }
+  @media (max-width: 640px) {
+    .news-link {
+      grid-template-columns: 72px 1fr auto;
+      gap: 0.75rem;
+      padding: 0.875rem 0;
+    }
+  }
+</style>

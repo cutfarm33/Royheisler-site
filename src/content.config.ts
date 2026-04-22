@@ -2,7 +2,12 @@ import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
 const projects = defineCollection({
-  loader: glob({ pattern: '**/index.{md,mdx}', base: './src/content/projects' }),
+  loader: glob({
+    pattern: '**/index.{md,mdx}',
+    base: './src/content/projects',
+    // Each project lives in its own folder as <slug>/index.mdx; use the folder as the id.
+    generateId: ({ entry }) => entry.replace(/\/index\.(md|mdx)$/, ''),
+  }),
   schema: ({ image }) =>
     z.object({
       title: z.string(),
