@@ -53,6 +53,17 @@ body {
   font-size: 16px;
   line-height: 1.6;
   text-rendering: optimizeLegibility;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1 0 auto;
+}
+
+footer {
+  flex-shrink: 0;
 }
 
 ::selection {
@@ -63,4 +74,94 @@ body {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 1px;
+}
+
+/* Section 3 typography scale — only 400 and 500 weights, never bolder. */
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-weight: 500;
+}
+
+h1 {
+  font-size: 32px;
+  line-height: 1.4;
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  font-size: 22px;
+  line-height: 1.4;
+  letter-spacing: -0.02em;
+}
+
+h3 {
+  font-size: 18px;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+}
+
+@media (max-width: 640px) {
+  body { font-size: 15px; }
+  h1 { font-size: 28px; }
+  h2 { font-size: 20px; }
+  h3 { font-size: 16px; }
+}
+
+/* Typography utilities — registered under utilities so they can be overridden by more specific classes. */
+@layer utilities {
+  .display-xl {
+    font-size: clamp(48px, 9vw, 96px);
+    line-height: 0.95;
+    letter-spacing: -0.035em;
+    font-weight: 500;
+  }
+  .display-l {
+    font-size: clamp(40px, 7vw, 72px);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    font-weight: 500;
+  }
+  .display-m {
+    font-size: 42px;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    font-weight: 500;
+  }
+  .label {
+    font-size: 11px;
+    line-height: 1.4;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-weight: 400;
+  }
+  .caption {
+    font-size: 12px;
+    line-height: 1.4;
+    font-weight: 400;
+    color: var(--fg-muted);
+  }
+}
+
+@media (max-width: 640px) {
+  .display-xl { font-size: 48px; }
+  .display-l { font-size: 40px; }
+  .display-m { font-size: 32px; }
+  .label { font-size: 10px; }
+  .caption { font-size: 11px; }
+}
+
+/* Motion — honor prefers-reduced-motion globally per brief Section 3. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

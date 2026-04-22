@@ -1,0 +1,18 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Not found" description="This page does not exist.">
+  <section class="min-h-[70vh] flex items-center">
+    <div class="max-w-[1400px] w-full mx-auto px-6 md:px-12">
+      <p class="label" style="color: var(--accent); margin-bottom: 1.5rem;">404</p>
+      <h1 class="display-l">Not found<span style="color: var(--fg-dim);">.</span></h1>
+      <p class="caption" style="margin-top: 1.5rem; max-width: 48ch;">
+        The page you're looking for isn't here.
+      </p>
+      <p style="margin-top: 2rem;">
+        <a href="/" class="label" style="color: var(--fg); border-bottom: 1px solid var(--accent); padding-bottom: 2px;">Back to home</a>
+      </p>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,68 @@
+---
+import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
+import SEO from '../components/SEO.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+  /** When true (e.g. homepage hero), skip the nav-height top padding so hero can sit under the nav. */
+  fullBleed?: boolean;
+}
+
+const { title, description, image, fullBleed = false } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#0a0a0a" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="alternate icon" href="/favicon.ico" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <SEO title={title} description={description} image={image} />
+    <ClientRouter />
+  </head>
+  <body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <Nav />
+    <main id="main" class={fullBleed ? '' : 'main-padded'}>
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>
+
+<style is:global>
+  .skip-link {
+    position: absolute;
+    left: -9999px;
+    top: auto;
+  }
+  .skip-link:focus {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 100;
+    padding: 0.5rem 1rem;
+    background: var(--accent);
+    color: var(--bg);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+  .main-padded {
+    padding-top: 7rem;
+  }
+  @media (max-width: 640px) {
+    .main-padded {
+      padding-top: 6rem;
+    }
+  }
+</style>
