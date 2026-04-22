@@ -10,16 +10,40 @@ const { images, label } = Astro.props;
 ---
 
 <figure class="storyboard">
-  {label && <figcaption class="label" style="color: var(--fg-muted); margin-bottom: 0.75rem;">{label}</figcaption>}
-  <div class="grid grid-cols-3 gap-2">
+  {label && <figcaption class="storyboard-label label">{label}</figcaption>}
+  <div class="storyboard-grid" data-count={images.length}>
     {images.map((img) => (
-      <Image src={img} alt="" loading="lazy" class="w-full h-auto" />
+      <Image
+        src={img}
+        alt=""
+        loading="lazy"
+        widths={[300, 600]}
+        sizes="(max-width: 640px) 50vw, 33vw"
+        class="storyboard-image"
+      />
     ))}
   </div>
 </figure>
 
 <style>
   .storyboard {
-    margin-block: 2.5rem;
+    margin: 0;
+  }
+  .storyboard-label {
+    color: var(--fg-muted);
+    margin-bottom: 0.75rem;
+  }
+  .storyboard-grid {
+    display: grid;
+    /* Adapt to container width — works at full page and inside SplitBlock. */
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.5rem;
+  }
+  .storyboard-image {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    display: block;
+    background: var(--bg-raised);
   }
 </style>

@@ -10,42 +10,52 @@ const { images, caption } = Astro.props;
 ---
 
 <figure class="bts-grid">
-  <div class="grid">
+  <div class="bts-grid-inner">
     {images.map((img) => (
       <div class="bts-cell">
-        <Image src={img} alt="" loading="lazy" class="w-full h-full object-cover" />
+        <Image
+          src={img}
+          alt=""
+          loading="lazy"
+          widths={[400, 800, 1200]}
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 400px"
+          class="bts-image"
+        />
       </div>
     ))}
   </div>
-  {caption && <figcaption class="label" style="color: var(--fg-muted); margin-top: 1rem;">{caption}</figcaption>}
+  {caption && <figcaption class="bts-caption label">{caption}</figcaption>}
 </figure>
 
 <style>
   .bts-grid {
-    margin-block: 2.5rem;
+    margin-block: 2.5rem 3rem;
   }
-  .grid {
-    /* 2fr 1fr 1fr uneven rhythm per brief Section 7 (BtsGrid spec). */
+  .bts-grid-inner {
     display: grid;
+    /* Uneven 2fr 1fr 1fr rhythm per brief Section 7. */
     grid-template-columns: 2fr 1fr 1fr;
-    grid-auto-rows: 180px;
+    grid-auto-rows: minmax(180px, auto);
     gap: 0.5rem;
   }
   .bts-cell {
+    position: relative;
     overflow: hidden;
   }
-  .bts-cell:first-child {
-    grid-row: span 2;
-    grid-column: span 1;
+  .bts-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .bts-caption {
+    color: var(--fg-muted);
+    margin-top: 1rem;
   }
   @media (max-width: 640px) {
-    .grid {
+    .bts-grid-inner {
       grid-template-columns: 1fr 1fr;
       grid-auto-rows: 140px;
-    }
-    .bts-cell:first-child {
-      grid-row: auto;
-      grid-column: span 2;
     }
   }
 </style>

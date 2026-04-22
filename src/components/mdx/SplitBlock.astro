@@ -1,15 +1,24 @@
 ---
-// No props — renders children into a 2-column grid. MDX author places two
-// siblings inside (e.g. Storyboard + ShotList) and the component pairs them.
+// Renders children side-by-side on desktop, stacked on mobile.
+// Typical use: <SplitBlock><Storyboard /><ShotList /></SplitBlock>
 ---
 
-<div class="split-block grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
+<div class="split-block">
   <slot />
 </div>
 
 <style>
   .split-block {
-    margin-block: 2.5rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-block: 2.5rem 3rem;
     align-items: start;
+  }
+  @media (min-width: 768px) {
+    .split-block {
+      grid-template-columns: 1fr 1fr;
+      gap: 2.5rem;
+    }
   }
 </style>

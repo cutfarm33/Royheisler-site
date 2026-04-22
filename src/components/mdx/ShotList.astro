@@ -13,8 +13,8 @@ const { label, shots } = Astro.props;
 ---
 
 <figure class="shot-list">
-  {label && <figcaption class="label" style="color: var(--fg-muted); margin-bottom: 0.75rem;">{label}</figcaption>}
-  <table>
+  {label && <figcaption class="shot-list-label label">{label}</figcaption>}
+  <table class="shot-table">
     <tbody>
       {shots.map((s) => (
         <tr>
@@ -29,24 +29,31 @@ const { label, shots } = Astro.props;
 
 <style>
   .shot-list {
-    margin-block: 2.5rem;
+    margin: 0;
   }
-  table {
+  .shot-list-label {
+    color: var(--fg-muted);
+    margin-bottom: 0.75rem;
+  }
+  .shot-table {
     width: 100%;
-    font-family: ui-monospace, 'SF Mono', 'Menlo', monospace;
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
     font-size: 13px;
+    line-height: 1.5;
     border-collapse: collapse;
-  }
-  tr + tr td {
     border-top: 1px solid var(--border);
   }
-  td {
+  .shot-table tr {
+    border-bottom: 1px solid var(--border);
+  }
+  .shot-table td {
     padding: 0.625rem 0.5rem;
     vertical-align: top;
   }
   .shot-id {
     color: var(--fg-muted);
-    width: 4rem;
+    width: 3.5rem;
+    white-space: nowrap;
   }
   .shot-desc {
     color: var(--fg);
@@ -56,5 +63,13 @@ const { label, shots } = Astro.props;
     text-align: right;
     white-space: nowrap;
     width: 5rem;
+  }
+  @media (max-width: 480px) {
+    .shot-table {
+      font-size: 12px;
+    }
+    .shot-id {
+      width: 3rem;
+    }
   }
 </style>
