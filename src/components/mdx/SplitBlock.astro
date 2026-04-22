@@ -1,0 +1,15 @@
+---
+// No props — renders children into a 2-column grid. MDX author places two
+// siblings inside (e.g. Storyboard + ShotList) and the component pairs them.
+---
+
+<div class="split-block grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
+  <slot />
+</div>
+
+<style>
+  .split-block {
+    margin-block: 2.5rem;
+    align-items: start;
+  }
+</style>

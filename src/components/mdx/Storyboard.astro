@@ -1,0 +1,25 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  images: ImageMetadata[];
+  label?: string;
+}
+const { images, label } = Astro.props;
+---
+
+<figure class="storyboard">
+  {label && <figcaption class="label" style="color: var(--fg-muted); margin-bottom: 0.75rem;">{label}</figcaption>}
+  <div class="grid grid-cols-3 gap-2">
+    {images.map((img) => (
+      <Image src={img} alt="" loading="lazy" class="w-full h-auto" />
+    ))}
+  </div>
+</figure>
+
+<style>
+  .storyboard {
+    margin-block: 2.5rem;
+  }
+</style>

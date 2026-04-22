@@ -1,0 +1,60 @@
+---
+interface Shot {
+  id: string;
+  description: string;
+  lens?: string;
+}
+
+interface Props {
+  label?: string;
+  shots: Shot[];
+}
+const { label, shots } = Astro.props;
+---
+
+<figure class="shot-list">
+  {label && <figcaption class="label" style="color: var(--fg-muted); margin-bottom: 0.75rem;">{label}</figcaption>}
+  <table>
+    <tbody>
+      {shots.map((s) => (
+        <tr>
+          <td class="shot-id">{s.id}</td>
+          <td class="shot-desc">{s.description}</td>
+          {s.lens && <td class="shot-lens">{s.lens}</td>}
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</figure>
+
+<style>
+  .shot-list {
+    margin-block: 2.5rem;
+  }
+  table {
+    width: 100%;
+    font-family: ui-monospace, 'SF Mono', 'Menlo', monospace;
+    font-size: 13px;
+    border-collapse: collapse;
+  }
+  tr + tr td {
+    border-top: 1px solid var(--border);
+  }
+  td {
+    padding: 0.625rem 0.5rem;
+    vertical-align: top;
+  }
+  .shot-id {
+    color: var(--fg-muted);
+    width: 4rem;
+  }
+  .shot-desc {
+    color: var(--fg);
+  }
+  .shot-lens {
+    color: var(--accent);
+    text-align: right;
+    white-space: nowrap;
+    width: 5rem;
+  }
+</style>

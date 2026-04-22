@@ -1,0 +1,33 @@
+---
+interface Props {
+  number: string;
+  label: string;
+}
+const { number, label } = Astro.props;
+---
+
+<section class="chapter">
+  <header class="flex items-baseline gap-4 mb-8">
+    <span class="chapter-number label" style="color: var(--accent);">{number}</span>
+    <span class="label" style="color: var(--fg-muted);">{label}</span>
+  </header>
+  <div class="chapter-body">
+    <slot />
+  </div>
+</section>
+
+<style>
+  .chapter {
+    padding-block: 3rem;
+  }
+  .chapter + .chapter {
+    border-top: 1px solid var(--border);
+  }
+  .chapter-number {
+    font-size: 14px;
+    letter-spacing: 0.2em;
+  }
+  .chapter-body {
+    max-width: 68ch;
+  }
+</style>
