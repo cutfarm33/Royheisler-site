@@ -1,0 +1,104 @@
+---
+import { Image } from 'astro:assets';
+import type { Project } from '../lib/projects';
+
+interface Props {
+  project: Project;
+}
+const { project } = Astro.props;
+const isCaseStudy = project.data.type === 'case-study';
+---
+
+<a
+  href={`/work/${project.id}`}
+  class="project-tile"
+  data-discipline={project.data.primaryDiscipline}
+>
+  <div class="tile-visual">
+    <Image
+      src={project.data.thumbnail}
+      alt={project.data.title}
+      class="tile-image"
+      widths={[600, 900, 1200]}
+      sizes="(max-width: 768px) 100vw, 50vw"
+      loading="lazy"
+    />
+    <div class="tile-overlay">
+      <p class="tile-caption label">{project.data.title} · {project.data.year}</p>
+    </div>
+  </div>
+  <div class="tile-meta">
+    <h3 class="tile-title">
+      <span>{project.data.title}</span>
+      {isCaseStudy && <span class="case-dot" aria-hidden="true" />}
+    </h3>
+    <p class="tile-year label">{project.data.year}</p>
+  </div>
+</a>
+
+<style>
+  .project-tile {
+    display: block;
+  }
+  .tile-visual {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--bg-raised);
+  }
+  .tile-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 200ms ease-out;
+  }
+  .tile-overlay {
+    position: absolute;
+    inset: auto 0 0 0;
+    padding: 1.25rem;
+    background: linear-gradient(to top, rgba(10, 10, 10, 0.85), transparent);
+    opacity: 0;
+    transition: opacity 200ms ease-out;
+  }
+  .tile-caption {
+    color: var(--fg);
+    margin: 0;
+  }
+  .project-tile:hover .tile-image,
+  .project-tile:focus-visible .tile-image {
+    opacity: 0.7;
+  }
+  .project-tile:hover .tile-overlay,
+  .project-tile:focus-visible .tile-overlay {
+    opacity: 1;
+  }
+  .tile-meta {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .tile-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--fg);
+    letter-spacing: -0.01em;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .case-dot {
+    display: inline-block;
+    width: 4px;
+    height: 4px;
+    background: var(--accent);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .tile-year {
+    color: var(--fg-muted);
+    margin: 0;
+  }
+</style>

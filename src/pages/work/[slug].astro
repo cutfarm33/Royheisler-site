@@ -1,0 +1,148 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import BackLink from '../../components/BackLink.astro';
+import MetaLine from '../../components/MetaLine.astro';
+import VideoEmbed from '../../components/VideoEmbed.astro';
+import CreditsBlock from '../../components/CreditsBlock.astro';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map((project) => ({
+    params: { slug: project.id },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+const isCaseStudy = project.data.type === 'case-study';
+---
+
+<BaseLayout
+  title={project.data.title}
+  description={project.data.summary}
+  image={project.data.thumbnail.src}
+>
+  <article class="project max-w-[1400px] mx-auto px-6 md:px-12">
+    <BackLink />
+
+    {isCaseStudy ? (
+      <!-- Step 6 fleshes out the case study layout; this is a Step 5 stub. -->
+      <div class="case-stub">
+        <p class="label" style="color: var(--accent); margin-top: 2.5rem;">Case study — Step 6</p>
+        <h1 class="display-xl case-title">{project.data.title}<span style="color: var(--fg-dim);">.</span></h1>
+        <p class="case-summary">{project.data.summary}</p>
+      </div>
+    ) : (
+      <>
+        <header class="project-header">
+          <MetaLine
+            client={project.data.client}
+            year={project.data.year}
+            disciplines={project.data.disciplines}
+          />
+          <h1 class="display-l project-title">
+            {project.data.title}<span style="color: var(--fg-dim);">.</span>
+          </h1>
+          <p class="project-summary">{project.data.summary}</p>
+        </header>
+
+        {project.data.heroVideo ? (
+          <div class="project-hero">
+            <VideoEmbed
+              url={project.data.heroVideo.url}
+              mode="interactive"
+              poster={project.data.heroVideo.poster}
+              title={project.data.title}
+            />
+          </div>
+        ) : project.data.heroImage ? (
+          <div class="project-hero">
+            <Image
+              src={project.data.heroImage}
+              alt={project.data.title}
+              widths={[800, 1200, 1600]}
+              sizes="(max-width: 1400px) 100vw, 1400px"
+              class="hero-image"
+            />
+          </div>
+        ) : null}
+
+        <div class="project-body prose">
+          <Content />
+        </div>
+
+        <CreditsBlock credits={project.data.credits} />
+      </>
+    )}
+  </article>
+</BaseLayout>
+
+<style>
+  .project {
+    padding-block: 1rem 4rem;
+  }
+  .project-header {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin: 2.5rem 0 2.5rem;
+  }
+  .project-title {
+    margin: 0;
+  }
+  .project-summary {
+    color: var(--fg-muted);
+    max-width: 420px;
+    margin: 0;
+  }
+  .project-hero {
+    margin-bottom: 3rem;
+  }
+  .hero-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    background: var(--bg-raised);
+  }
+  .project-body {
+    max-width: 68ch;
+    margin-inline: auto;
+    padding-block: 1rem 2rem;
+  }
+  .project-body :global(p) {
+    margin-block: 0 1.25rem;
+    color: var(--fg);
+  }
+  .project-body :global(p:last-child) {
+    margin-bottom: 0;
+  }
+  .project-body :global(a) {
+    color: var(--accent);
+    border-bottom: 1px solid rgba(201, 162, 39, 0.35);
+    transition: border-color 150ms ease-out;
+  }
+  .project-body :global(a:hover) {
+    border-bottom-color: var(--accent);
+  }
+  .project-body :global(h2) {
+    margin-top: 2.5rem;
+    margin-bottom: 0.75rem;
+  }
+  .project-body :global(h3) {
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
+  }
+  .case-title {
+    margin-top: 0.75rem;
+  }
+  .case-summary {
+    color: var(--fg-muted);
+    max-width: 420px;
+    margin-top: 1.5rem;
+  }
+</style>

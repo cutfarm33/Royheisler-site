@@ -1,0 +1,26 @@
+---
+interface Props {
+  href?: string;
+  label?: string;
+}
+const { href = '/work', label = 'Back to work' } = Astro.props;
+---
+
+<a href={href} class="back-link label">
+  <span aria-hidden="true">&larr;</span>
+  <span>{label}</span>
+</a>
+
+<style>
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--fg-muted);
+    transition: color 150ms ease-out;
+  }
+  .back-link:hover,
+  .back-link:focus-visible {
+    color: var(--fg);
+  }
+</style>

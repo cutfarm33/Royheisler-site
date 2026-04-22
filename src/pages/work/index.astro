@@ -1,13 +1,84 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import FilterPills from '../../components/FilterPills.astro';
+import ProjectTile from '../../components/ProjectTile.astro';
+import { getAllProjects } from '../../lib/projects';
+
+const projects = await getAllProjects();
 ---
 
-<BaseLayout title="Work" description="Selected work — film, photography, code.">
-  <section class="max-w-[1400px] mx-auto px-6 md:px-12 py-12">
-    <p class="label" style="color: var(--fg-muted); margin-bottom: 1.5rem;">Coming soon</p>
-    <h1 class="display-l">Work<span style="color: var(--fg-dim);">.</span></h1>
-    <p class="caption" style="margin-top: 1.5rem; max-width: 48ch;">
-      Step 5 wires the filterable grid.
-    </p>
+<BaseLayout
+  title="Work"
+  description="Selected work — film, photography, code."
+>
+  <section class="max-w-[1400px] mx-auto px-6 md:px-12">
+    <header class="work-header">
+      <h1 class="display-l">Work<span style="color: var(--fg-dim);">.</span></h1>
+      <FilterPills />
+    </header>
+
+    <div class="work-grid" data-filter="all">
+      {projects.map((p) => <ProjectTile project={p} />)}
+    </div>
+
+    <p class="work-empty label" aria-live="polite">No projects match this filter.</p>
   </section>
 </BaseLayout>
+
+<style>
+  .work-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-bottom: 3rem;
+  }
+  .work-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  @media (min-width: 768px) {
+    .work-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem 2rem;
+    }
+  }
+  /* Filter via data-attribute on the grid set by FilterPills.astro script. */
+  .work-grid[data-filter="film"] > :not([data-discipline="film"]) { display: none; }
+  .work-grid[data-filter="photo"] > :not([data-discipline="photo"]) { display: none; }
+  .work-grid[data-filter="code"] > :not([data-discipline="code"]) { display: none; }
+
+  .work-empty {
+    display: none;
+    margin-top: 3rem;
+    color: var(--fg-muted);
+  }
+  .work-grid:not([data-filter="all"]) + .work-empty:has(+ .work-grid > [data-discipline]) {
+    display: none;
+  }
+  /* Fallback: show empty state if every child is hidden. Implemented via JS below. */
+</style>
+
+<script>
+  const syncEmpty = () => {
+    const grid = document.querySelector<HTMLElement>('.work-grid');
+    const empty = document.querySelector<HTMLElement>('.work-empty');
+    if (!grid || !empty) return;
+    const visible = [...grid.children].some(
+      (c) => window.getComputedStyle(c as Element).display !== 'none',
+    );
+    empty.style.display = visible ? 'none' : 'block';
+  };
+  const mo = new MutationObserver(syncEmpty);
+  const bind = () => {
+    const grid = document.querySelector<HTMLElement>('.work-grid');
+    if (!grid) return;
+    mo.disconnect();
+    mo.observe(grid, { attributes: true, attributeFilter: ['data-filter'] });
+    syncEmpty();
+  };
+  bind();
+  document.addEventListener('astro:page-load', bind);
+</script>

@@ -1,0 +1,34 @@
+---
+import type { Project } from '../lib/projects';
+import { disciplineLabel } from '../lib/projects';
+
+interface Props {
+  client: string;
+  year: number;
+  disciplines: Project['data']['disciplines'];
+}
+
+const { client, year, disciplines } = Astro.props;
+const disciplineText = disciplines.map(disciplineLabel).join(' + ');
+---
+
+<p class="meta-line label">
+  <span>{client}</span>
+  <span class="sep">·</span>
+  <span>{year}</span>
+  <span class="sep">·</span>
+  <span>{disciplineText}</span>
+</p>
+
+<style>
+  .meta-line {
+    color: var(--fg-muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.625rem;
+    margin: 0;
+  }
+  .sep {
+    color: var(--fg-dim);
+  }
+</style>

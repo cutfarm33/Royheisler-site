@@ -1,0 +1,70 @@
+---
+const currentFilter = Astro.url.searchParams.get('filter') ?? 'all';
+
+const filters = [
+  { value: 'all', label: 'All' },
+  { value: 'film', label: 'Film' },
+  { value: 'photo', label: 'Photo' },
+  { value: 'code', label: 'Code' },
+];
+---
+
+<nav class="filter-pills" aria-label="Filter projects by discipline">
+  {filters.map((f) => (
+    <a
+      href={f.value === 'all' ? '/work' : `/work?filter=${f.value}`}
+      class:list={['filter-pill label', { 'is-active': currentFilter === f.value }]}
+      aria-current={currentFilter === f.value ? 'page' : undefined}
+      data-filter={f.value}
+    >
+      {f.label}
+    </a>
+  ))}
+</nav>
+
+<script>
+  /**
+   * Keep the rendered pill's active state and the grid's data-filter attribute
+   * in sync with the URL on both initial load and View-Transition navigations.
+   */
+  const applyFilter = () => {
+    const params = new URLSearchParams(window.location.search);
+    const filter = params.get('filter') ?? 'all';
+
+    const grid = document.querySelector<HTMLElement>('.work-grid');
+    if (grid) grid.dataset.filter = filter;
+
+    document.querySelectorAll<HTMLAnchorElement>('.filter-pill').forEach((pill) => {
+      const isActive = pill.dataset.filter === filter;
+      pill.classList.toggle('is-active', isActive);
+      if (isActive) pill.setAttribute('aria-current', 'page');
+      else pill.removeAttribute('aria-current');
+    });
+  };
+
+  applyFilter();
+  document.addEventListener('astro:page-load', applyFilter);
+  window.addEventListener('popstate', applyFilter);
+</script>
+
+<style>
+  .filter-pills {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .filter-pill {
+    padding: 0.5rem 0.875rem;
+    border: 1px solid transparent;
+    color: var(--fg-muted);
+    transition: color 150ms ease-out, border-color 150ms ease-out;
+  }
+  .filter-pill:hover,
+  .filter-pill:focus-visible {
+    color: var(--fg);
+  }
+  .filter-pill.is-active {
+    border-color: var(--accent);
+    color: var(--fg);
+  }
+</style>

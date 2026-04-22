@@ -1,0 +1,70 @@
+---
+interface Credit {
+  role: string;
+  name: string;
+  isMe: boolean;
+}
+
+interface Props {
+  credits: Credit[];
+  title?: string;
+}
+
+const { credits, title = 'Credits' } = Astro.props;
+---
+
+<section class="credits-block">
+  <p class="credits-heading label">{title}</p>
+  <dl class="credits-list">
+    {credits.map((c) => (
+      <div class:list={['credit-row', { 'is-me': c.isMe }]}>
+        <dt class="credit-role label">{c.role}</dt>
+        <dd class="credit-name">{c.name}</dd>
+      </div>
+    ))}
+  </dl>
+</section>
+
+<style>
+  .credits-block {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+  }
+  .credits-heading {
+    color: var(--fg-muted);
+    margin: 0 0 1.5rem;
+  }
+  .credits-list {
+    margin: 0;
+    display: grid;
+    gap: 0;
+  }
+  .credit-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    gap: 1.5rem;
+    padding: 0.75rem 0;
+    border-top: 1px solid var(--border);
+    align-items: baseline;
+  }
+  .credit-role {
+    margin: 0;
+    color: var(--fg-muted);
+  }
+  .credit-name {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--fg);
+  }
+  .credit-row.is-me .credit-role,
+  .credit-row.is-me .credit-name {
+    color: var(--accent);
+  }
+  @media (max-width: 640px) {
+    .credit-name {
+      font-size: 14px;
+    }
+  }
+</style>
