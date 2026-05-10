@@ -1,13 +1,293 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+
+const hiringOptions = ['Directing', 'DP', 'Editing', 'Photography', 'Development', 'Other'];
+const timelineOptions = ['0–2 weeks', '1 month', '1 quarter', 'Later', 'Ongoing'];
 ---
 
 <BaseLayout title="Contact" description="Get in touch for film, photography, or development work.">
-  <section class="max-w-[1400px] mx-auto px-6 md:px-12 py-12">
-    <p class="label" style="color: var(--fg-muted); margin-bottom: 1.5rem;">Coming soon</p>
-    <h1 class="display-l">Contact<span style="color: var(--fg-dim);">.</span></h1>
-    <p class="caption" style="margin-top: 1.5rem; max-width: 48ch;">
-      Step 7 wires the inquiry form.
-    </p>
+  <section class="contact-page max-w-[1400px] mx-auto px-6 md:px-12">
+    <header class="contact-header">
+      <h1 class="display-l">Get in touch<span style="color: var(--fg-dim);">.</span></h1>
+    </header>
+
+    <div class="contact-grid">
+      <form id="contact-form" class="contact-form" novalidate>
+        <div class="field">
+          <label for="f-name">Name</label>
+          <input id="f-name" name="name" type="text" autocomplete="name" required />
+        </div>
+
+        <div class="field">
+          <label for="f-email">Email</label>
+          <input id="f-email" name="email" type="email" autocomplete="email" required />
+        </div>
+
+        <div class="field">
+          <label for="f-company">Company <span class="field-optional">Optional</span></label>
+          <input id="f-company" name="company" type="text" autocomplete="organization" />
+        </div>
+
+        <div class="field">
+          <label for="f-hiring">Hiring me for</label>
+          <select id="f-hiring" name="hiringFor" required>
+            <option value="">Select one</option>
+            {hiringOptions.map((o) => <option value={o}>{o}</option>)}
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="f-timeline">Timeline</label>
+          <select id="f-timeline" name="timeline" required>
+            <option value="">Select one</option>
+            {timelineOptions.map((o) => <option value={o}>{o}</option>)}
+          </select>
+        </div>
+
+        <div class="field field-full">
+          <label for="f-message">Message</label>
+          <textarea id="f-message" name="message" rows="5" required></textarea>
+        </div>
+
+        <div class="field field-full">
+          <button type="submit" class="submit">Send message</button>
+          <p class="form-status label" role="status" aria-live="polite"></p>
+        </div>
+      </form>
+
+      <aside class="contact-aside">
+        <p class="label contact-aside-label">Direct</p>
+        <p>
+          <a href="mailto:roy@cutfarm.com" class="contact-email">roy@cutfarm.com</a>
+        </p>
+        <p class="label contact-aside-label">Elsewhere</p>
+        <ul class="contact-social">
+          <li><a href="https://www.instagram.com/" rel="me noopener">Instagram</a></li>
+          <li><a href="https://vimeo.com/" rel="me noopener">Vimeo</a></li>
+          <li><a href="https://www.linkedin.com/" rel="me noopener">LinkedIn</a></li>
+        </ul>
+      </aside>
+    </div>
   </section>
 </BaseLayout>
+
+<script>
+  const bind = () => {
+    const form = document.getElementById('contact-form');
+    if (!(form instanceof HTMLFormElement)) return;
+    if (form.dataset.bound === 'true') return;
+    form.dataset.bound = 'true';
+
+    const status = form.querySelector<HTMLElement>('.form-status');
+    const submit = form.querySelector<HTMLButtonElement>('.submit');
+
+    const setStatus = (message: string, tone: 'ok' | 'err' | 'info' = 'info') => {
+      if (!status) return;
+      status.textContent = message;
+      status.dataset.tone = tone;
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        setStatus('Check the required fields above.', 'err');
+        return;
+      }
+      const data = Object.fromEntries(new FormData(form).entries());
+      if (submit) submit.disabled = true;
+      setStatus('Sending…', 'info');
+      try {
+        const res = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+        const body = await res.json().catch(() => ({}));
+        if (res.ok && body?.ok) {
+          setStatus('Thanks — I will get back to you soon.', 'ok');
+          form.reset();
+        } else {
+          setStatus(body?.error || 'Something went wrong. Please email directly.', 'err');
+        }
+      } catch {
+        setStatus('Network error. Please email directly.', 'err');
+      } finally {
+        if (submit) submit.disabled = false;
+      }
+    });
+  };
+  bind();
+  document.addEventListener('astro:page-load', bind);
+</script>
+
+<style>
+  .contact-page {
+    padding-block: 1rem 5rem;
+  }
+  .contact-header {
+    margin: 2rem 0 3rem;
+  }
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+  @media (min-width: 900px) {
+    .contact-grid {
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+      gap: 4rem;
+    }
+  }
+  .contact-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.25rem 1.5rem;
+    align-items: end;
+  }
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .field-full {
+    grid-column: 1 / -1;
+  }
+  label {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+    font-weight: 400;
+  }
+  .field-optional {
+    color: var(--fg-dim);
+    margin-left: 0.25rem;
+    letter-spacing: 0.2em;
+  }
+  input,
+  select,
+  textarea {
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--border);
+    padding: 0.5rem 0;
+    color: var(--fg);
+    font-family: inherit;
+    font-size: 16px;
+    line-height: 1.5;
+    width: 100%;
+    transition: border-color 150ms ease-out;
+  }
+  textarea {
+    resize: vertical;
+    min-height: 5rem;
+  }
+  select {
+    /* Keep native appearance minimal but legible on dark. */
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, var(--fg-muted) 50%),
+      linear-gradient(135deg, var(--fg-muted) 50%, transparent 50%);
+    background-position:
+      calc(100% - 18px) 22px,
+      calc(100% - 12px) 22px;
+    background-size: 6px 6px, 6px 6px;
+    background-repeat: no-repeat;
+    padding-right: 2rem;
+  }
+  input:focus,
+  select:focus,
+  textarea:focus {
+    outline: none;
+    border-bottom-color: var(--accent);
+  }
+  input:invalid:not(:placeholder-shown),
+  textarea:invalid:not(:placeholder-shown) {
+    border-bottom-color: rgba(201, 162, 39, 0.45);
+  }
+  .submit {
+    justify-self: start;
+    background: transparent;
+    color: var(--fg);
+    border: 1px solid var(--accent);
+    padding: 0.75rem 1.5rem;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 150ms ease-out, color 150ms ease-out;
+  }
+  .submit:hover,
+  .submit:focus-visible {
+    background: var(--accent);
+    color: var(--bg);
+  }
+  .submit:disabled {
+    opacity: 0.6;
+    cursor: wait;
+  }
+  .form-status {
+    margin-top: 1rem;
+    min-height: 1.25rem;
+    color: var(--fg-muted);
+  }
+  .form-status[data-tone='ok'] {
+    color: var(--accent);
+  }
+  .form-status[data-tone='err'] {
+    color: #e5736d;
+  }
+
+  .contact-aside {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding-top: 0.5rem;
+  }
+  .contact-aside p {
+    margin: 0;
+  }
+  .contact-aside-label {
+    color: var(--fg-muted);
+    margin-top: 1rem;
+  }
+  .contact-aside-label:first-of-type {
+    margin-top: 0;
+  }
+  .contact-email {
+    color: var(--fg);
+    border-bottom: 1px solid var(--accent);
+    padding-bottom: 2px;
+    transition: color 150ms ease-out;
+    font-size: 16px;
+  }
+  .contact-email:hover,
+  .contact-email:focus-visible {
+    color: var(--accent);
+  }
+  .contact-social {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .contact-social a {
+    color: var(--fg);
+    font-size: 15px;
+    transition: color 150ms ease-out;
+  }
+  .contact-social a:hover,
+  .contact-social a:focus-visible {
+    color: var(--accent);
+  }
+
+  @media (max-width: 640px) {
+    .contact-form {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

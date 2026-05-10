@@ -1,13 +1,80 @@
 ---
+import { getEntry } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import VideoEmbed from '../components/VideoEmbed.astro';
+
+const about = await getEntry('about', 'about');
+if (!about) throw new Error('src/content/about.mdx is required for /reel and /about');
+
+const { reel } = about.data;
 ---
 
 <BaseLayout title="Reel" description="Directing and cinematography reel.">
-  <section class="max-w-[1400px] mx-auto px-6 md:px-12 py-12">
-    <p class="label" style="color: var(--accent); margin-bottom: 1.5rem;">Coming soon</p>
-    <h1 class="display-l">Reel<span style="color: var(--fg-dim);">.</span></h1>
-    <p class="caption" style="margin-top: 1.5rem; max-width: 48ch;">
-      Step 7 wires the reel embed, bio, and CTA.
-    </p>
+  <section class="reel-page">
+    <div class="reel-video-wrap max-w-[1400px] mx-auto px-6 md:px-12">
+      <VideoEmbed
+        url={reel.url}
+        mode="interactive"
+        poster={reel.poster}
+        title="Roy Heisler — Reel"
+      />
+    </div>
+
+    <div class="reel-footer max-w-[1400px] mx-auto px-6 md:px-12">
+      <p class="reel-bio">{reel.bio}</p>
+      <a href="/contact" class="reel-cta">
+        <span>Get in touch</span>
+        <span aria-hidden="true" class="reel-cta-arrow">&rarr;</span>
+      </a>
+    </div>
   </section>
 </BaseLayout>
+
+<style>
+  .reel-page {
+    padding-block: 1rem 4rem;
+  }
+  .reel-video-wrap {
+    margin-bottom: 3rem;
+  }
+  .reel-footer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2.5rem;
+  }
+  .reel-bio {
+    max-width: 500px;
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--fg);
+    margin: 0;
+  }
+  .reel-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    font-family: var(--font-display);
+    font-size: clamp(32px, 6vw, 56px);
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    color: var(--fg);
+    border-bottom: 1px solid var(--accent);
+    padding-bottom: 0.5rem;
+    transition: color 200ms ease-out;
+  }
+  .reel-cta:hover,
+  .reel-cta:focus-visible {
+    color: var(--accent);
+  }
+  .reel-cta-arrow {
+    transition: transform 200ms ease-out;
+    color: var(--accent);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .reel-cta:hover .reel-cta-arrow {
+      transform: translateX(0.25rem);
+    }
+  }
+</style>

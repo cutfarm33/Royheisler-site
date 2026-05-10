@@ -64,4 +64,29 @@ const projects = defineCollection({
     }),
 });
 
-export const collections = { projects };
+const about = defineCollection({
+  loader: glob({ pattern: 'about.{md,mdx}', base: './src/content' }),
+  schema: ({ image }) =>
+    z.object({
+      headline: z.string(),
+      reel: z.object({
+        url: z.string(),
+        poster: image().optional(),
+        bio: z.string(),
+      }),
+      services: z.array(z.string()),
+      clients: z.array(z.string()).default([]),
+      press: z
+        .array(
+          z.object({
+            outlet: z.string(),
+            url: z.string().url(),
+          }),
+        )
+        .default([]),
+      representation: z.string().optional(),
+      stills: z.array(image()).default([]),
+    }),
+});
+
+export const collections = { projects, about };

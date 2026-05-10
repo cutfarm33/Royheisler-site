@@ -1,0 +1,340 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout title="Professional Editor" description="Upload a document, edit with AI, and download a polished PDF." >
+  <section class="max-w-[960px] mx-auto px-6 md:px-12 py-20">
+    <div class="editor-hero">
+      <p class="label">AI EDITING STUDIO</p>
+      <h1 class="display-m mt-4">Upload your draft, get a professional line edit, then download a polished PDF.</h1>
+      <p class="caption mt-4 max-w-prose text-fg-muted">Designed for writers in nursing, veterinary care, and clinical publishing who want a magazine-ready rewrite with a clear, compelling narrative voice.</p>
+    </div>
+
+    <div class="editor-grid mt-12 gap-10">
+      <form id="editorForm" class="editor-form" onsubmit="return false;">
+        <label class="field-label" for="upload">Upload document</label>
+        <input id="upload" type="file" accept=".txt,.md" class="field-input" />
+        <p class="caption">Only plain text and Markdown files are supported for this demo. Paste your draft below if needed.</p>
+
+        <label class="field-label" for="sourceText">Draft text</label>
+        <textarea id="sourceText" rows="14" class="field-input monospace" placeholder="Paste your draft here or upload a .txt/.md file."></textarea>
+
+        <div class="button-row">
+          <button id="submitButton" type="button" class="button button-primary">Edit document</button>
+          <button id="downloadButton" type="button" class="button button-secondary" disabled>Download PDF</button>
+        </div>
+
+        <div id="statusMessage" class="status-message" role="status"></div>
+      </form>
+
+      <section class="editor-output">
+        <div class="output-panel">
+          <h2 class="label">AI Editor Result</h2>
+          <div id="resultBlock" class="result-block empty">
+            <p class="caption">Your edited article, headline, deck, and editor memo will appear here after processing.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </section>
+</BaseLayout>
+
+<script type="module">
+  const upload = document.getElementById('upload');
+  const sourceText = document.getElementById('sourceText');
+  const submitButton = document.getElementById('submitButton');
+  const downloadButton = document.getElementById('downloadButton');
+  const statusMessage = document.getElementById('statusMessage');
+  const resultBlock = document.getElementById('resultBlock');
+
+  let editorResult = null;
+  const apiEndpoint = import.meta.env.PUBLIC_EDITOR_API_URL || '/api/editor';
+
+  const setStatus = (message, type = 'info') => {
+    statusMessage.textContent = message;
+    statusMessage.className = `status-message ${type}`;
+  };
+
+  const renderResult = (result) => {
+    if (!result) {
+      resultBlock.innerHTML = `<p class="caption">Your edited article, headline, deck, and editor memo will appear here after processing.</p>`;
+      resultBlock.classList.add('empty');
+      return;
+    }
+
+    resultBlock.classList.remove('empty');
+    resultBlock.innerHTML = `
+      <div class="memo-section">
+        <h3>Headline</h3>
+        <p class="result-headline">${escapeHtml(result.headline)}</p>
+      </div>
+      <div class="memo-section">
+        <h3>Deck</h3>
+        <p class="result-deck">${escapeHtml(result.deck)}</p>
+      </div>
+      <div class="memo-section">
+        <h3>Edited text</h3>
+        <div class="result-text">${formatParagraphs(result.editedText)}</div>
+      </div>
+      <div class="memo-section">
+        <h3>Editor's memo</h3>
+        <p class="result-memo">${escapeHtml(result.editorMemo)}</p>
+      </div>
+    `;
+  };
+
+  const escapeHtml = (text) => {
+    return text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/\'/g, '&#039;')
+      .replace(/\n/g, '<br/>');
+  };
+
+  const formatParagraphs = (text) => {
+    return escapeHtml(text)
+      .split(/\n{2,}/)
+      .map((block) => `<p>${block.replace(/\n/g, '<br/>')}</p>`)
+      .join('');
+  };
+
+  const readFile = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(new Error('Unable to read file.'));
+      reader.readAsText(file);
+    });
+  };
+
+  upload.addEventListener('change', async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const accepted = ['text/plain', 'text/markdown', 'application/octet-stream'];
+    if (!accepted.includes(file.type) && !file.name.endsWith('.md') && !file.name.endsWith('.txt')) {
+      setStatus('Only .txt and .md files are supported. Paste your draft if you have a different format.', 'error');
+      return;
+    }
+
+    try {
+      const content = await readFile(file);
+      sourceText.value = String(content);
+      setStatus(`Loaded ${file.name}.`, 'success');
+    } catch (error) {
+      setStatus(error.message, 'error');
+    }
+  });
+
+  submitButton.addEventListener('click', async () => {
+    const content = sourceText.value.trim();
+    if (!content) {
+      setStatus('Please paste your draft or upload a supported file before submitting.', 'error');
+      return;
+    }
+
+    setStatus('Editing your document... this may take a moment.', 'info');
+    submitButton.disabled = true;
+    downloadButton.disabled = true;
+
+    try {
+      const response = await fetch(apiEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error?.error || 'Unexpected server error.');
+      }
+
+      const result = await response.json();
+      editorResult = result;
+      renderResult(result);
+      setStatus('Document edited successfully. Download the PDF when ready.', 'success');
+      downloadButton.disabled = false;
+    } catch (error) {
+      setStatus(error.message, 'error');
+      renderResult(null);
+    } finally {
+      submitButton.disabled = false;
+    }
+  });
+
+  downloadButton.addEventListener('click', async () => {
+    if (!editorResult) return;
+    setStatus('Generating PDF…', 'info');
+    downloadButton.disabled = true;
+
+    try {
+      const { jsPDF } = await import('jspdf');
+      const doc = new jsPDF({ unit: 'pt', format: 'letter' });
+      const pageWidth = 612;
+      const margin = 40;
+      let y = 60;
+
+      const addText = (text, size = 12, options = {}) => {
+        doc.setFontSize(size);
+        const lines = doc.splitTextToSize(text, pageWidth - margin * 2);
+        for (const line of lines) {
+          if (y > 740) {
+            doc.addPage();
+            y = 60;
+          }
+          doc.text(line, margin, y, options);
+          y += size * 1.25;
+        }
+      };
+
+      doc.setFont(undefined, 'bold');
+      addText(editorResult.headline, 18);
+      y += 8;
+      doc.setFont(undefined, 'normal');
+      addText(editorResult.deck, 12);
+      y += 14;
+      addText(editorResult.editedText, 11);
+      y += 10;
+      addText('Editor\'s memo:', 13, { fontStyle: 'bold' });
+      addText(editorResult.editorMemo, 11);
+
+      doc.save('edited-document.pdf');
+      setStatus('PDF ready. Check your downloads.', 'success');
+    } catch (error) {
+      setStatus('PDF generation failed. ' + error.message, 'error');
+    } finally {
+      downloadButton.disabled = false;
+    }
+  });
+
+  renderResult(null);
+</script>
+
+<style>
+  .editor-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+  }
+
+  .editor-form,
+  .editor-output {
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+  }
+
+  .field-label {
+    display: block;
+    margin-bottom: 0.75rem;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--fg-muted);
+  }
+
+  .field-input {
+    display: block;
+    width: 100%;
+    min-height: 3rem;
+    margin-bottom: 1.25rem;
+    padding: 1rem;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: rgba(255,255,255,0.03);
+    color: var(--fg);
+    font: inherit;
+    resize: vertical;
+  }
+
+  .monospace {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  }
+
+  .button-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .button {
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    padding: 0.95rem 1.4rem;
+    font-weight: 500;
+    transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+  }
+
+  .button-primary {
+    background: var(--accent);
+    color: var(--bg);
+  }
+
+  .button-primary:hover {
+    background: rgba(201, 162, 39, 0.9);
+  }
+
+  .button-secondary {
+    background: transparent;
+    color: var(--fg);
+    border-color: var(--border);
+  }
+
+  .button-secondary:hover {
+    background: rgba(255,255,255,0.04);
+  }
+
+  .status-message {
+    min-height: 2rem;
+    margin-top: 0.75rem;
+    color: var(--fg);
+  }
+
+  .status-message.error {
+    color: #ea6e6e;
+  }
+
+  .status-message.success {
+    color: #8bc34a;
+  }
+
+  .editor-output .result-block {
+    min-height: 16rem;
+    color: var(--fg);
+  }
+
+  .editor-output .result-block.empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--fg-muted);
+  }
+
+  .memo-section + .memo-section {
+    margin-top: 1.5rem;
+  }
+
+  .result-headline,
+  .result-deck,
+  .result-memo {
+    margin: 0.5rem 0 0;
+    color: var(--fg);
+  }
+
+  .result-text p {
+    margin: 0 0 1rem;
+  }
+
+  .result-text p:last-child {
+    margin-bottom: 0;
+  }
+
+  @media (max-width: 980px) {
+    .editor-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
