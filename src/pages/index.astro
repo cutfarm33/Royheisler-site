@@ -1,137 +1,86 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import VideoEmbed from '../components/VideoEmbed.astro';
-import NewsItem from '../components/NewsItem.astro';
-import {
-  getAllProjects,
-  getFeaturedProject,
-  disciplineLabel,
-  primaryDisciplineLabel,
-} from '../lib/projects';
+import FilterPills from '../components/FilterPills.astro';
+import ProjectTile from '../components/ProjectTile.astro';
+import { getProjectsForIndex } from '../lib/projects';
 
-const featured = await getFeaturedProject();
-const projects = await getAllProjects();
-
-const heroMonth = featured.data.publishedAt
-  .toLocaleString('en-US', { month: 'short' })
-  .toUpperCase();
-const heroYear = featured.data.publishedAt.getFullYear();
+const projects = await getProjectsForIndex();
 ---
 
 <BaseLayout
-  title="Roy Heisler"
-  description="Director, DP, Editor, Photographer, Developer. Selected work for agencies and production companies."
-  fullBleed
+  title="Work"
+  description="Selected work — film, photography, code."
 >
-  <section class="hero pt-28 md:pt-32">
-    <div class="max-w-[1400px] mx-auto px-6 md:px-12">
-      <p class="label hero-label">Latest — {heroMonth} {heroYear}</p>
-      <h1 class="display-xl hero-title">
-        {featured.data.title}<span style="color: var(--fg-dim);">.</span>
-      </h1>
-    </div>
-
-    <div class="max-w-[1400px] mx-auto px-6 md:px-12 mt-8">
-      {featured.data.heroVideo ? (
-        <VideoEmbed
-          url={featured.data.heroVideo.url}
-          mode="loop-muted"
-          poster={featured.data.heroVideo.poster}
-          title={featured.data.title}
-        />
-      ) : featured.data.heroImage ? (
-        <img src={featured.data.heroImage.src} alt="" class="hero-still" />
-      ) : null}
-    </div>
-
-    <div class="max-w-[1400px] mx-auto px-6 md:px-12 mt-4 hero-meta">
-      <p class="hero-disciplines label">
-        {featured.data.disciplines.map((d, i) => (
-          <>
-            {i > 0 && <span class="hero-disciplines-sep">·</span>}
-            <span class="hero-discipline">{disciplineLabel(d)}</span>
-          </>
-        ))}
-      </p>
-      <p class="hero-client label">{featured.data.client}</p>
-    </div>
-  </section>
-
-  <section class="news max-w-[1400px] mx-auto px-6 md:px-12 mt-24 md:mt-32 pb-16">
-    <header class="news-header">
-      <h2 class="display-m">News<span style="color: var(--fg-dim);">.</span></h2>
-      <a href="/work" class="label news-view-all">View all <span aria-hidden="true">→</span></a>
+  <section class="max-w-[1400px] mx-auto px-6 md:px-12">
+    <header class="work-header">
+      <h1 class="display-l">Work<span style="color: var(--fg-dim);">.</span></h1>
+      <FilterPills />
     </header>
-    <ol class="news-feed">
-      {projects.slice(0, 20).map((p) => (
-        <NewsItem
-          date={p.data.publishedAt}
-          title={p.data.title}
-          discipline={primaryDisciplineLabel(p.data.primaryDiscipline)}
-          href={`/work/${p.id}`}
-        />
-      ))}
-    </ol>
+
+    <div class="work-grid" data-filter="all">
+      {projects.map((p) => <ProjectTile project={p} />)}
+    </div>
+
+    <p class="work-empty label" aria-live="polite">No projects match this filter.</p>
   </section>
 </BaseLayout>
 
 <style>
-  .hero-label {
-    color: var(--fg-muted);
-    margin-bottom: 1.25rem;
-  }
-  .hero-title {
-    /* display-xl already provides font size + line-height + tracking */
-    margin: 0;
-  }
-  .hero-still {
-    display: block;
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    object-fit: cover;
-    background: var(--bg-raised);
-  }
-  .hero-meta {
+  .work-header {
     display: flex;
-    align-items: baseline;
+    align-items: flex-end;
     justify-content: space-between;
-    gap: 1rem;
+    gap: 2rem;
     flex-wrap: wrap;
+    margin-bottom: 3rem;
   }
-  .hero-disciplines {
-    display: flex;
-    align-items: center;
-    gap: 0.625rem;
-    flex-wrap: wrap;
+  .work-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
   }
-  .hero-discipline {
-    color: var(--accent);
+  @media (min-width: 768px) {
+    .work-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem 2rem;
+    }
   }
-  .hero-disciplines-sep {
-    color: var(--fg-dim);
-  }
-  .hero-client {
-    color: var(--fg);
-    letter-spacing: 0.14em;
-  }
-  .news-header {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 2rem;
-  }
-  .news-view-all {
+  /* Filter via data-attribute on the grid, set by FilterPills.astro's script.
+     The tiles are rendered by ProjectTile.astro and carry *its* scope hash, so
+     the child half of these selectors must be :global() — otherwise Astro scopes
+     it to this page's hash and it matches nothing. */
+  .work-grid[data-filter="film"] > :global(:not([data-discipline="film"])) { display: none; }
+  .work-grid[data-filter="photo"] > :global(:not([data-discipline="photo"])) { display: none; }
+  .work-grid[data-filter="graphics"] > :global(:not([data-discipline="graphics"])) { display: none; }
+  .work-grid[data-filter="code"] > :global(:not([data-discipline="code"])) { display: none; }
+
+  .work-empty {
+    display: none;
+    margin-top: 3rem;
     color: var(--fg-muted);
-    transition: color 150ms ease-out;
   }
-  .news-view-all:hover,
-  .news-view-all:focus-visible {
-    color: var(--fg);
-  }
-  .news-feed {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
+  /* The empty state is toggled by the script below, which measures whether any
+     tile is still visible after the filter applies. */
 </style>
+
+<script>
+  const syncEmpty = () => {
+    const grid = document.querySelector<HTMLElement>('.work-grid');
+    const empty = document.querySelector<HTMLElement>('.work-empty');
+    if (!grid || !empty) return;
+    const visible = [...grid.children].some(
+      (c) => window.getComputedStyle(c as Element).display !== 'none',
+    );
+    empty.style.display = visible ? 'none' : 'block';
+  };
+  const mo = new MutationObserver(syncEmpty);
+  const bind = () => {
+    const grid = document.querySelector<HTMLElement>('.work-grid');
+    if (!grid) return;
+    mo.disconnect();
+    mo.observe(grid, { attributes: true, attributeFilter: ['data-filter'] });
+    syncEmpty();
+  };
+  bind();
+  document.addEventListener('astro:page-load', bind);
+</script>

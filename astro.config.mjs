@@ -13,6 +13,11 @@ export default defineConfig({
     webAnalytics: { enabled: false },
   }),
   site: 'https://royheisler.com',
+  // The work grid moved to the homepage; keep the old URL working. Project
+  // pages still live at /work/<slug>, so only the index redirects.
+  redirects: {
+    '/work': '/',
+  },
   integrations: [mdx()],
   vite: {
     plugins: [tailwindcss()],

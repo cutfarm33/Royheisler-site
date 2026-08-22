@@ -24,10 +24,11 @@ const projects = defineCollection({
           'product-photo',
           'editorial',
           'architecture-photo',
+          'graphics',
           'code',
         ]),
       ),
-      primaryDiscipline: z.enum(['film', 'photo', 'code']),
+      primaryDiscipline: z.enum(['film', 'photo', 'graphics', 'code']),
       type: z.enum(['case-study', 'standard']),
       summary: z.string().max(140),
       heroVideo: z

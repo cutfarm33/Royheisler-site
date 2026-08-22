@@ -28,14 +28,21 @@ const { title, description, image, fullBleed = false } = Astro.props;
         Inline and synchronous on purpose — deferring it reintroduces the flash. */}
     <script is:inline>
       (() => {
-        try {
-          const stored = localStorage.getItem('theme');
-          if (stored === 'light' || stored === 'dark') {
-            document.documentElement.dataset.theme = stored;
+        const apply = () => {
+          try {
+            const stored = localStorage.getItem('theme');
+            if (stored === 'light' || stored === 'dark') {
+              document.documentElement.dataset.theme = stored;
+            }
+          } catch (e) {
+            /* private mode / storage disabled — fall back to the media query */
           }
-        } catch (e) {
-          /* private mode / storage disabled — fall back to the media query */
-        }
+        };
+        apply();
+        // ClientRouter swaps the whole document on navigation, which drops the
+        // data-theme attribute from <html>. astro:after-swap runs before the
+        // new page paints, so re-applying here avoids a flash of the wrong theme.
+        document.addEventListener('astro:after-swap', apply);
       })();
     </script>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />

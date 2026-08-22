@@ -3,7 +3,7 @@ interface Props {
   href?: string;
   label?: string;
 }
-const { href = '/work', label = 'Back to work' } = Astro.props;
+const { href = '/', label = 'Back to work' } = Astro.props;
 ---
 
 <a href={href} class="back-link label">

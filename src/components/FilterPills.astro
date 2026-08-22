@@ -5,6 +5,7 @@ const filters = [
   { value: 'all', label: 'All' },
   { value: 'film', label: 'Film' },
   { value: 'photo', label: 'Photo' },
+  { value: 'graphics', label: 'Graphics' },
   { value: 'code', label: 'Code' },
 ];
 ---
@@ -12,7 +13,7 @@ const filters = [
 <nav class="filter-pills" aria-label="Filter projects by discipline">
   {filters.map((f) => (
     <a
-      href={f.value === 'all' ? '/work' : `/work?filter=${f.value}`}
+      href={f.value === 'all' ? '/' : `/?filter=${f.value}`}
       class:list={['filter-pill label', { 'is-active': currentFilter === f.value }]}
       aria-current={currentFilter === f.value ? 'page' : undefined}
       data-filter={f.value}

@@ -54,13 +54,15 @@ export function disciplineLabel(d: Project['data']['disciplines'][number]): stri
     'product-photo': 'Product photography',
     editorial: 'Editorial',
     'architecture-photo': 'Architecture photography',
+    graphics: 'Motion graphics',
     code: 'Code',
   };
   return map[d] ?? d;
 }
 
 export function primaryDisciplineLabel(p: Project['data']['primaryDiscipline']): string {
-  return p === 'film' ? 'FILM' : p === 'photo' ? 'PHOTO' : 'CODE';
+  const map = { film: 'FILM', photo: 'PHOTO', graphics: 'GRAPHICS', code: 'CODE' } as const;
+  return map[p];
 }
 
 export function isFilmDiscipline(d: Project['data']['disciplines'][number]): boolean {
