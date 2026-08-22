@@ -10,6 +10,24 @@ export async function getAllProjects(): Promise<Project[]> {
 }
 
 /**
+ * Order for the /work grid: projects with an explicit `order` come first, in
+ * that order; everything else follows newest-first. Kept separate from
+ * getAllProjects() so the homepage news feed stays strictly chronological —
+ * it prints a date next to each row, so a manual order would read as wrong.
+ */
+export async function getProjectsForIndex(): Promise<Project[]> {
+  const all = await getAllProjects();
+  return [...all].sort((a, b) => {
+    const ao = a.data.order;
+    const bo = b.data.order;
+    if (ao != null && bo != null) return ao - bo;
+    if (ao != null) return -1;
+    if (bo != null) return 1;
+    return b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf();
+  });
+}
+
+/**
  * Brief Section 5: "Enforce — exactly one project may be featured: true at a
  * time. Throw a build error otherwise." This helper is called from the
  * homepage, so the error surfaces at build.

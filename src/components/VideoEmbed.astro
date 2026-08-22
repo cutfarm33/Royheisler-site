@@ -79,6 +79,7 @@ const hostLabel = parsed.host === 'vimeo' ? 'Vimeo' : parsed.host === 'youtube' 
           if (!src) return obs.unobserve(fig);
           if (mode === 'loop-muted' && !prefersReducedMotion) {
             fig.appendChild(makeIframe(src, title));
+            fig.dataset.playing = 'true';
           }
           obs.unobserve(fig);
         });
@@ -98,6 +99,7 @@ const hostLabel = parsed.host === 'vimeo' ? 'Vimeo' : parsed.host === 'youtube' 
           if (!src) return;
           const autoSrc = src + (src.includes('?') ? '&' : '?') + 'autoplay=1';
           fig.appendChild(makeIframe(autoSrc, title));
+          fig.dataset.playing = 'true';
           btn.remove();
         });
       }
@@ -124,9 +126,11 @@ const hostLabel = parsed.host === 'vimeo' ? 'Vimeo' : parsed.host === 'youtube' 
     object-fit: cover;
     display: block;
   }
-  .mode-loop-muted .video-poster {
-    /* On loop-muted, iframe will cover the poster once loaded. */
-    z-index: 0;
+  /* Once the player is in, drop the poster. A video whose aspect ratio differs
+     from the frame letterboxes inside a *transparent* iframe, so a poster left
+     underneath shows through the bars. */
+  .video-embed[data-playing] .video-poster {
+    display: none;
   }
   .video-play {
     position: absolute;
@@ -134,7 +138,7 @@ const hostLabel = parsed.host === 'vimeo' ? 'Vimeo' : parsed.host === 'youtube' 
     z-index: 2;
     display: grid;
     place-items: center;
-    background: rgba(10, 10, 10, 0.12);
+    background: var(--scrim-media-soft);
     color: var(--fg);
     cursor: pointer;
     border: 0;
@@ -142,7 +146,7 @@ const hostLabel = parsed.host === 'vimeo' ? 'Vimeo' : parsed.host === 'youtube' 
   }
   .video-play:hover,
   .video-play:focus-visible {
-    background: rgba(10, 10, 10, 0.35);
+    background: var(--scrim-media-strong);
   }
   .play-label {
     padding: 0.75rem 1.75rem;

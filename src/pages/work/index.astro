@@ -2,9 +2,9 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import FilterPills from '../../components/FilterPills.astro';
 import ProjectTile from '../../components/ProjectTile.astro';
-import { getAllProjects } from '../../lib/projects';
+import { getProjectsForIndex } from '../../lib/projects';
 
-const projects = await getAllProjects();
+const projects = await getProjectsForIndex();
 ---
 
 <BaseLayout
@@ -45,20 +45,21 @@ const projects = await getAllProjects();
       gap: 3rem 2rem;
     }
   }
-  /* Filter via data-attribute on the grid set by FilterPills.astro script. */
-  .work-grid[data-filter="film"] > :not([data-discipline="film"]) { display: none; }
-  .work-grid[data-filter="photo"] > :not([data-discipline="photo"]) { display: none; }
-  .work-grid[data-filter="code"] > :not([data-discipline="code"]) { display: none; }
+  /* Filter via data-attribute on the grid, set by FilterPills.astro's script.
+     The tiles are rendered by ProjectTile.astro and carry *its* scope hash, so
+     the child half of these selectors must be :global() — otherwise Astro scopes
+     it to this page's hash and it matches nothing. */
+  .work-grid[data-filter="film"] > :global(:not([data-discipline="film"])) { display: none; }
+  .work-grid[data-filter="photo"] > :global(:not([data-discipline="photo"])) { display: none; }
+  .work-grid[data-filter="code"] > :global(:not([data-discipline="code"])) { display: none; }
 
   .work-empty {
     display: none;
     margin-top: 3rem;
     color: var(--fg-muted);
   }
-  .work-grid:not([data-filter="all"]) + .work-empty:has(+ .work-grid > [data-discipline]) {
-    display: none;
-  }
-  /* Fallback: show empty state if every child is hidden. Implemented via JS below. */
+  /* The empty state is toggled by the script below, which measures whether any
+     tile is still visible after the filter applies. */
 </style>
 
 <script>

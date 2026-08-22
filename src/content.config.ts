@@ -55,6 +55,9 @@ const projects = defineCollection({
         })
         .optional(),
       featured: z.boolean().default(false),
+      /** Manual position on /work (lower first). Unset projects follow, newest
+          first. Does not affect the homepage news feed, which stays dated. */
+      order: z.number().optional(),
       press: z
         .array(
           z.object({

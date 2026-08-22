@@ -204,7 +204,7 @@ const timelineOptions = ['0–2 weeks', '1 month', '1 quarter', 'Later', 'Ongoin
   }
   input:invalid:not(:placeholder-shown),
   textarea:invalid:not(:placeholder-shown) {
-    border-bottom-color: rgba(201, 162, 39, 0.45);
+    border-bottom-color: var(--accent-line);
   }
   .submit {
     justify-self: start;
@@ -237,7 +237,7 @@ const timelineOptions = ['0–2 weeks', '1 month', '1 quarter', 'Later', 'Ongoin
     color: var(--accent);
   }
   .form-status[data-tone='err'] {
-    color: #e5736d;
+    color: var(--error);
   }
 
   .contact-aside {
