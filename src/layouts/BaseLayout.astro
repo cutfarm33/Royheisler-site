@@ -72,12 +72,14 @@ const { title, description, image, fullBleed = false } = Astro.props;
     letter-spacing: 0.2em;
     text-transform: uppercase;
   }
+  /* Clears the 4rem fixed nav with breathing room, without stranding the
+     content halfway down the viewport. */
   .main-padded {
-    padding-top: 7rem;
+    padding-top: 5.5rem;
   }
   @media (max-width: 640px) {
     .main-padded {
-      padding-top: 6rem;
+      padding-top: 5rem;
     }
   }
 </style>
