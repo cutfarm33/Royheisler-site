@@ -32,7 +32,9 @@ export function disciplineLabel(d: Project['data']['disciplines'][number]): stri
     directed: 'Directed',
     dp: 'DP',
     edited: 'Edited',
+    portrait: 'Portraits',
     'product-photo': 'Product photography',
+    editorial: 'Editorial',
     'architecture-photo': 'Architecture photography',
     code: 'Code',
   };

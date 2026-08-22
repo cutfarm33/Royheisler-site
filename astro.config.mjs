@@ -7,7 +7,8 @@ import vercel from '@astrojs/vercel';
 
 // https://astro.build/config
 export default defineConfig({
-  output: 'static',
+  // Static by default so content-collection pages keep prerendering via
+  // getStaticPaths(). The API routes opt out with `export const prerender = false`.
   adapter: vercel({
     webAnalytics: { enabled: false },
   }),

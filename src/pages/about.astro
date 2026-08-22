@@ -7,7 +7,7 @@ const about = await getEntry('about', 'about');
 if (!about) throw new Error('src/content/about.mdx is required for /about');
 
 const { Content } = await render(about);
-const { headline, services, clients, press, representation, stills } = about.data;
+const { headline, portrait, services, clients, press, representation, stills } = about.data;
 ---
 
 <BaseLayout title="About" description={headline}>
@@ -16,8 +16,20 @@ const { headline, services, clients, press, representation, stills } = about.dat
       <h1 class="display-l about-headline">{headline}</h1>
     </header>
 
-    <div class="about-bio">
-      <Content />
+    <div class="about-intro">
+      <div class="about-bio">
+        <Content />
+      </div>
+      {portrait && (
+        <Image
+          src={portrait}
+          alt="Roy Heisler"
+          widths={[400, 700, 1400]}
+          sizes="(max-width: 900px) 100vw, 420px"
+          loading="eager"
+          class="about-portrait"
+        />
+      )}
     </div>
 
     {stills.length > 0 && (
@@ -89,9 +101,29 @@ const { headline, services, clients, press, representation, stills } = about.dat
   .about-headline {
     margin: 0;
   }
+  .about-intro {
+    display: grid;
+    grid-template-columns: minmax(0, 600px) 420px;
+    gap: 4rem;
+    align-items: start;
+    margin-bottom: 4rem;
+  }
   .about-bio {
     max-width: 600px;
-    margin-bottom: 4rem;
+  }
+  .about-portrait {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  @media (max-width: 900px) {
+    .about-intro {
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+    }
+    .about-portrait {
+      max-width: 420px;
+    }
   }
   .about-bio :global(p) {
     font-size: 16px;

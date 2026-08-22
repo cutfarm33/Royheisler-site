@@ -20,7 +20,9 @@ const projects = defineCollection({
           'directed',
           'dp',
           'edited',
+          'portrait',
           'product-photo',
+          'editorial',
           'architecture-photo',
           'code',
         ]),
@@ -69,6 +71,8 @@ const about = defineCollection({
   schema: ({ image }) =>
     z.object({
       headline: z.string(),
+      /** Photo of Roy, shown beside the bio. */
+      portrait: image().optional(),
       reel: z.object({
         url: z.string(),
         poster: image().optional(),
