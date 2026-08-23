@@ -12,6 +12,8 @@ const isActive = (href: string) => {
     <div class="nav-right">
       <div id="nav-links" class="nav-links">
         <a href="/" class:list={['label nav-link', { 'is-active': isActive('/') }]}>Work</a>
+        <a href="/work/photography" class:list={['label nav-link', { 'is-active': isActive('/work/photography') }]}>Photos</a>
+        <a href="/work/graphics" class:list={['label nav-link', { 'is-active': isActive('/work/graphics') }]}>Graphics</a>
         <a href="/about" class:list={['label nav-link', { 'is-active': isActive('/about') }]}>About</a>
         <a href="/contact" class:list={['label nav-link', { 'is-active': isActive('/contact') }]}>Contact</a>
         <a href="/reel" class:list={['label nav-reel', { 'is-active': isActive('/reel') }]}>Reel</a>

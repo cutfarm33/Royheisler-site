@@ -15,9 +15,14 @@ export async function getAllProjects(): Promise<Project[]> {
  * getAllProjects() so the homepage news feed stays strictly chronological —
  * it prints a date next to each row, so a manual order would read as wrong.
  */
+/** Disciplines that have their own nav section rather than a tile on /work. */
+const ownSection = new Set(['photo', 'graphics']);
+
 export async function getProjectsForIndex(): Promise<Project[]> {
   const all = await getAllProjects();
-  return [...all].sort((a, b) => {
+  return all
+    .filter((p) => !ownSection.has(p.data.primaryDiscipline))
+    .sort((a, b) => {
     const ao = a.data.order;
     const bo = b.data.order;
     if (ao != null && bo != null) return ao - bo;
