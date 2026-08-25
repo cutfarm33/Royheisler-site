@@ -1,7 +1,8 @@
 ---
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Lightbox from '../components/Lightbox.astro';
 
 // Images are named <category>-<source-name>.jpg, so the category comes from the
 // filename rather than a hand-maintained list.
@@ -17,13 +18,20 @@ const CATEGORIES = [
   { key: 'product', label: 'Product' },
 ] as const;
 
-const photos = Object.entries(files)
-  .map(([path, mod]) => {
-    const name = path.split('/').pop() ?? '';
-    return { cat: name.split('-')[0], img: mod.default, name };
-  })
-  .filter((p) => CATEGORIES.some((c) => c.key === p.cat))
-  .sort((a, b) => a.name.localeCompare(b.name));
+const photos = await Promise.all(
+  Object.entries(files)
+    .map(([path, mod]) => {
+      const name = path.split('/').pop() ?? '';
+      return { cat: name.split('-')[0], img: mod.default, name };
+    })
+    .filter((p) => CATEGORIES.some((c) => c.key === p.cat))
+    .sort((a, b) => a.name.localeCompare(b.name))
+    // A single large rendition per photo, used only by the lightbox.
+    .map(async (p) => ({
+      ...p,
+      full: (await getImage({ src: p.img, width: Math.min(p.img.width, 2200), format: 'webp' })).src,
+    })),
+);
 
 ---
 
@@ -47,8 +55,8 @@ const photos = Object.entries(files)
     </header>
 
     <div class="photo-grid" data-cat-filter="all">
-      {photos.map(({ img, cat }) => (
-        <div class="photo-cell" data-cat={cat}>
+      {photos.map(({ img, cat, full }) => (
+        <div class="photo-cell" data-cat={cat} data-full={full} role="button" tabindex="0">
           <Image
             src={img}
             alt=""
@@ -64,6 +72,7 @@ const photos = Object.entries(files)
 
     <p class="grid-empty label" hidden aria-live="polite">No photographs in this category.</p>
   </section>
+  <Lightbox />
 </BaseLayout>
 
 <script>

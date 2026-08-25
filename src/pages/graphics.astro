@@ -1,7 +1,8 @@
 ---
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Lightbox from '../components/Lightbox.astro';
 
 const files = import.meta.glob<{ default: ImageMetadata }>(
   '../images/graphics/*.jpg',
@@ -9,10 +10,16 @@ const files = import.meta.glob<{ default: ImageMetadata }>(
 );
 
 // thumbnail.jpg is a duplicate of one of the cards, kept only as a tile image.
-const graphics = Object.entries(files)
-  .map(([path, mod]) => ({ name: path.split('/').pop() ?? '', img: mod.default }))
-  .filter((g) => g.name !== 'thumbnail.jpg')
-  .sort((a, b) => a.name.localeCompare(b.name));
+const graphics = await Promise.all(
+  Object.entries(files)
+    .map(([path, mod]) => ({ name: path.split('/').pop() ?? '', img: mod.default }))
+    .filter((g) => g.name !== 'thumbnail.jpg')
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .map(async (g) => ({
+      ...g,
+      full: (await getImage({ src: g.img, width: Math.min(g.img.width, 2200), format: 'webp' })).src,
+    })),
+);
 
 ---
 
@@ -27,8 +34,8 @@ const graphics = Object.entries(files)
     </header>
 
     <div class="photo-grid">
-      {graphics.map(({ img }) => (
-        <div class="photo-cell">
+      {graphics.map(({ img, full }) => (
+        <div class="photo-cell" data-full={full} role="button" tabindex="0">
           <Image
             src={img}
             alt=""
@@ -42,6 +49,7 @@ const graphics = Object.entries(files)
       ))}
     </div>
   </section>
+  <Lightbox />
 </BaseLayout>
 
 <style>

@@ -3,14 +3,12 @@ import type { APIRoute } from 'astro';
 // Runs as a Vercel serverless function (not prerendered).
 export const prerender = false;
 
-/**
- * STUB endpoint. Logs the payload server-side and returns 200.
- * Before going live, wire this up to a real provider:
- *   - Resend:    https://resend.com (recommended for simple transactional mail)
- *   - Formspree: https://formspree.io (no backend code at all)
- *   - SendGrid / Postmark also fine.
- * Replace the console.log with the actual send + error handling.
- */
+const TO = process.env.CONTACT_TO ?? 'hello@royheisler.com';
+// Resend's shared sender works without domain verification, but only delivers
+// to the address that owns the Resend account. Set CONTACT_FROM to an address
+// on a domain you've verified to send from your own domain instead.
+const FROM = process.env.CONTACT_FROM ?? 'onboarding@resend.dev';
+
 export const POST: APIRoute = async ({ request }) => {
   if (!request.headers.get('content-type')?.includes('application/json')) {
     return json({ ok: false, error: 'Expected application/json' }, 415);
@@ -34,8 +32,58 @@ export const POST: APIRoute = async ({ request }) => {
     return json({ ok: false, error: 'Invalid email' }, 400);
   }
 
-  // TODO: wire to Resend / Formspree / SendGrid before production.
-  console.log('[contact] received:', payload);
+  const key = process.env.RESEND_API_KEY;
+  if (!key) {
+    // Never report success for a message that was not sent — the visitor would
+    // walk away believing it arrived.
+    console.error('[contact] RESEND_API_KEY is not set; message NOT sent:', payload);
+    return json(
+      { ok: false, error: `Email isn't configured yet. Please write to ${TO} directly.` },
+      503,
+    );
+  }
+
+  const name = String(payload.name);
+  const text = [
+    `Name:        ${name}`,
+    `Email:       ${email}`,
+    `Hiring for:  ${payload.hiringFor}`,
+    `Timeline:    ${payload.timeline}`,
+    '',
+    String(payload.message),
+  ].join('\n');
+
+  try {
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${key}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: `Roy Heisler Site <${FROM}>`,
+        to: [TO],
+        reply_to: email,
+        subject: `Enquiry from ${name} — ${payload.hiringFor}`,
+        text,
+      }),
+    });
+
+    if (!res.ok) {
+      const detail = await res.text();
+      console.error('[contact] Resend rejected the send:', res.status, detail, payload);
+      return json(
+        { ok: false, error: `Couldn't send that. Please write to ${TO} directly.` },
+        502,
+      );
+    }
+  } catch (err) {
+    console.error('[contact] send threw:', err, payload);
+    return json(
+      { ok: false, error: `Couldn't send that. Please write to ${TO} directly.` },
+      502,
+    );
+  }
 
   return json({ ok: true }, 200);
 };
