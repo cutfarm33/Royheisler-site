@@ -55,8 +55,10 @@
   --tag-bg: rgba(242, 237, 228, 0.06);
   --error: #e5736d;
 
-  /* Scrim behind the nav once scrolled — follows the theme. */
-  --scrim-nav: rgba(22, 20, 18, 0.88);
+  /* Top bar sits above the page rather than on it. Kept separate from
+     --bg-raised so the bar can be lighter than the media surface. */
+  --nav-bg: #262320;
+  --scrim-nav: rgba(38, 35, 32, 0.88);
 
   /* Scrims that sit on top of imagery. Deliberately dark in BOTH themes:
      the text over them is always light, and a photo doesn't change tone
@@ -86,7 +88,8 @@
   --accent-line: rgba(138, 107, 20, 0.4);
   --tag-bg: rgba(23, 21, 15, 0.05);
   --error: #b4322c;
-  --scrim-nav: rgba(239, 234, 225, 0.88);
+  --nav-bg: #ffffff;
+  --scrim-nav: rgba(255, 255, 255, 0.9);
 }
 
 /* No stored choice: follow the system. */
@@ -104,7 +107,8 @@
     --accent-line: rgba(138, 107, 20, 0.4);
     --tag-bg: rgba(23, 21, 15, 0.05);
     --error: #b4322c;
-    --scrim-nav: rgba(239, 234, 225, 0.88);
+    --nav-bg: #ffffff;
+    --scrim-nav: rgba(255, 255, 255, 0.9);
   }
 }
 
