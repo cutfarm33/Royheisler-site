@@ -13,6 +13,7 @@ const files = import.meta.glob<{ default: ImageMetadata }>(
 const CATEGORIES = [
   { key: 'portrait', label: 'Portraits' },
   { key: 'editorial', label: 'Editorial' },
+  { key: 'architectural', label: 'Architectural' },
   { key: 'product', label: 'Product' },
 ] as const;
 
@@ -143,6 +144,7 @@ const photos = Object.entries(files)
 
   .photo-grid[data-cat-filter='portrait'] .photo-cell:not([data-cat='portrait']),
   .photo-grid[data-cat-filter='editorial'] .photo-cell:not([data-cat='editorial']),
+  .photo-grid[data-cat-filter='architectural'] .photo-cell:not([data-cat='architectural']),
   .photo-grid[data-cat-filter='product'] .photo-cell:not([data-cat='product']) {
     display: none;
   }
