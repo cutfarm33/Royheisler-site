@@ -11,9 +11,9 @@ const isActive = (href: string) => {
     <a href="/" class="wordmark" aria-label="Roy Heisler — home">Roy Heisler</a>
     <div class="nav-right">
       <div id="nav-links" class="nav-links">
-        <a href="/" class:list={['label nav-link', { 'is-active': isActive('/') }]}>Work</a>
-        <a href="/work/photography" class:list={['label nav-link', { 'is-active': isActive('/work/photography') }]}>Photos</a>
-        <a href="/work/graphics" class:list={['label nav-link', { 'is-active': isActive('/work/graphics') }]}>Graphics</a>
+        <a href="/" class:list={['label nav-link', { 'is-active': isActive('/') }]}>Video</a>
+        <a href="/photography" class:list={['label nav-link', { 'is-active': isActive('/photography') }]}>Photos</a>
+        <a href="/graphics" class:list={['label nav-link', { 'is-active': isActive('/graphics') }]}>Graphics</a>
         <a href="/about" class:list={['label nav-link', { 'is-active': isActive('/about') }]}>About</a>
         <a href="/contact" class:list={['label nav-link', { 'is-active': isActive('/contact') }]}>Contact</a>
         <a href="/reel" class:list={['label nav-reel', { 'is-active': isActive('/reel') }]}>Reel</a>
@@ -140,10 +140,15 @@ const isActive = (href: string) => {
 
 <style>
   nav {
-    transition: background-color 200ms ease, backdrop-filter 200ms ease;
+    /* Hairline that separates the bar from the page without reading as a rule.
+       --border is ~8% of the foreground, so it stays a whisper in both themes. */
+    border-bottom: 1px solid var(--border);
+    transition: background-color 200ms ease, backdrop-filter 200ms ease,
+      border-color 200ms ease;
   }
   nav.is-scrolled {
     background: var(--scrim-nav);
+    border-bottom-color: var(--border-strong);
     -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
   }

@@ -1,0 +1,89 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const files = import.meta.glob<{ default: ImageMetadata }>(
+  '../images/graphics/*.jpg',
+  { eager: true },
+);
+
+// thumbnail.jpg is a duplicate of one of the cards, kept only as a tile image.
+const graphics = Object.entries(files)
+  .map(([path, mod]) => ({ name: path.split('/').pop() ?? '', img: mod.default }))
+  .filter((g) => g.name !== 'thumbnail.jpg')
+  .sort((a, b) => a.name.localeCompare(b.name));
+
+---
+
+<BaseLayout
+  title="Graphics"
+  description="Title cards, lower thirds, and brand animation for commercial and corporate work."
+>
+  <section class="max-w-[1400px] mx-auto px-6 md:px-12">
+    <header class="section-header">
+      <h1 class="display-l">Graphics<span style="color: var(--fg-dim);">.</span></h1>
+      <p class="section-note label">Title cards, lower thirds, and brand animation.</p>
+    </header>
+
+    <div class="photo-grid">
+      {graphics.map(({ img }) => (
+        <div class="photo-cell">
+          <Image
+            src={img}
+            alt=""
+            loading="lazy"
+            widths={[400, 800, 1200, 1600]}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            style={`aspect-ratio: ${img.width} / ${img.height};`}
+            class="photo-image"
+          />
+        </div>
+      ))}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .section-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-bottom: 3rem;
+  }
+  .section-note {
+    color: var(--fg-muted);
+    margin: 0;
+  }
+  .photo-grid {
+    columns: 3;
+    column-gap: 0.75rem;
+  }
+  .photo-cell {
+    break-inside: avoid;
+    margin-bottom: 0.75rem;
+    background: var(--bg-raised);
+    overflow: hidden;
+  }
+  .photo-image {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  @media (max-width: 1024px) {
+    .photo-grid {
+      columns: 2;
+    }
+  }
+  @media (max-width: 640px) {
+    .photo-grid {
+      columns: 1;
+      column-gap: 0.5rem;
+    }
+    .photo-cell {
+      margin-bottom: 0.5rem;
+    }
+  }
+</style>

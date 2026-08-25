@@ -17,6 +17,9 @@ export default defineConfig({
   // pages still live at /work/<slug>, so only the index redirects.
   redirects: {
     '/work': '/',
+    // The galleries moved out of the projects collection to their own pages.
+    '/work/photography': '/photography',
+    '/work/graphics': '/graphics',
   },
   integrations: [mdx()],
   vite: {
