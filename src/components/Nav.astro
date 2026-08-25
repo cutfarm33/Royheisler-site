@@ -127,13 +127,33 @@ const isActive = (href: string) => {
     });
   };
 
+  /**
+   * The nav is transition:persist, so it survives view-transition navigations
+   * intact — including the is-active classes rendered on the *first* page it
+   * was served with. They have to be recomputed from the current URL, using the
+   * same rule as the server: exact match, or a section prefix.
+   */
+  const syncActive = () => {
+    const path = window.location.pathname.replace(/\/+$/, '') || '/';
+    document.querySelectorAll<HTMLAnchorElement>('#nav-links a').forEach((a) => {
+      const href = (a.getAttribute('href') ?? '').replace(/\/+$/, '') || '/';
+      const active =
+        href === '/' ? path === '/' : path === href || path.startsWith(href + '/');
+      a.classList.toggle('is-active', active);
+      if (active) a.setAttribute('aria-current', 'page');
+      else a.removeAttribute('aria-current');
+    });
+  };
+
   bind();
   bindToggle();
   bindMenu();
+  syncActive();
   document.addEventListener('astro:page-load', () => {
     bind();
     bindToggle();
     bindMenu();
+    syncActive();
     document.body.style.removeProperty('overflow');
   });
 </script>
