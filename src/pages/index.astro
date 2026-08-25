@@ -49,10 +49,9 @@ const projects = await getProjectsForIndex();
      The tiles are rendered by ProjectTile.astro and carry *its* scope hash, so
      the child half of these selectors must be :global() — otherwise Astro scopes
      it to this page's hash and it matches nothing. */
-  .work-grid[data-filter="film"] > :global(:not([data-discipline="film"])) { display: none; }
-  .work-grid[data-filter="photo"] > :global(:not([data-discipline="photo"])) { display: none; }
-  .work-grid[data-filter="graphics"] > :global(:not([data-discipline="graphics"])) { display: none; }
-  .work-grid[data-filter="code"] > :global(:not([data-discipline="code"])) { display: none; }
+  .work-grid[data-filter="story"] > :global(:not([data-category="story"])) { display: none; }
+  .work-grid[data-filter="commercial"] > :global(:not([data-category="commercial"])) { display: none; }
+  .work-grid[data-filter="motion"] > :global(:not([data-category="motion"])) { display: none; }
 
   .work-empty {
     display: none;

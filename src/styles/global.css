@@ -56,7 +56,7 @@
   --error: #e5736d;
 
   /* Scrim behind the nav once scrolled — follows the theme. */
-  --scrim-nav: rgba(10, 10, 10, 0.85);
+  --scrim-nav: rgba(22, 20, 18, 0.88);
 
   /* Scrims that sit on top of imagery. Deliberately dark in BOTH themes:
      the text over them is always light, and a photo doesn't change tone
@@ -86,7 +86,7 @@
   --accent-line: rgba(138, 107, 20, 0.4);
   --tag-bg: rgba(23, 21, 15, 0.05);
   --error: #b4322c;
-  --scrim-nav: rgba(250, 248, 245, 0.85);
+  --scrim-nav: rgba(239, 234, 225, 0.88);
 }
 
 /* No stored choice: follow the system. */
@@ -104,7 +104,7 @@
     --accent-line: rgba(138, 107, 20, 0.4);
     --tag-bg: rgba(23, 21, 15, 0.05);
     --error: #b4322c;
-    --scrim-nav: rgba(250, 248, 245, 0.85);
+    --scrim-nav: rgba(239, 234, 225, 0.88);
   }
 }
 

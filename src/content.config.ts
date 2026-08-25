@@ -29,6 +29,8 @@ const projects = defineCollection({
         ]),
       ),
       primaryDiscipline: z.enum(['film', 'photo', 'graphics', 'code']),
+      /** Filter grouping on the Video index. */
+      category: z.enum(['story', 'commercial', 'motion']).optional(),
       type: z.enum(['case-study', 'standard']),
       summary: z.string().max(140),
       heroVideo: z

@@ -160,8 +160,10 @@ const isActive = (href: string) => {
 
 <style>
   nav {
-    /* Hairline that separates the bar from the page without reading as a rule.
-       --border is ~8% of the foreground, so it stays a whisper in both themes. */
+    /* Sits a step off the page: --bg-raised is the same surface used behind
+       media, so the bar reads as a distinct plane rather than a tinted strip.
+       The hairline underneath keeps the edge crisp where contrast is low. */
+    background: var(--bg-raised);
     border-bottom: 1px solid var(--border);
     transition: background-color 200ms ease, backdrop-filter 200ms ease,
       border-color 200ms ease;
