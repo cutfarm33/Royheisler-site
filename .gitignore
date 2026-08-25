@@ -25,7 +25,8 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 
-# source photo library (originals stay local; optimized copies live in src/content)
-images/
+# source photo library (originals stay local; optimized copies live in src/images).
+# Leading slash anchors this to the repo root so it does not also match src/images/.
+/images/
 .vercel
 .env*
