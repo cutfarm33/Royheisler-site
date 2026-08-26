@@ -3,11 +3,27 @@ import type { APIRoute } from 'astro';
 // Runs as a Vercel serverless function (not prerendered).
 export const prerender = false;
 
-const TO = process.env.CONTACT_TO ?? 'hello@royheisler.com';
+/**
+ * Read an environment variable at request time.
+ *
+ * A literal `process.env.FOO` can be statically replaced during the SSR build,
+ * and a Vercel variable marked "Sensitive" does not exist at build time, so it
+ * would be inlined as undefined and the key would never be visible at runtime.
+ * The dynamic lookup defeats that substitution, and checks both the Vite and
+ * Node views of the environment.
+ */
+function env(key: string): string | undefined {
+  const viteEnv = import.meta.env as unknown as Record<string, string | undefined>;
+  const nodeEnv = (globalThis as { process?: { env?: Record<string, string | undefined> } })
+    .process?.env;
+  return viteEnv?.[key] ?? nodeEnv?.[key];
+}
+
+const TO = () => env('CONTACT_TO') ?? 'hello@royheisler.com';
 // Resend's shared sender works without domain verification, but only delivers
 // to the address that owns the Resend account. Set CONTACT_FROM to an address
 // on a domain you've verified to send from your own domain instead.
-const FROM = process.env.CONTACT_FROM ?? 'onboarding@resend.dev';
+const FROM = () => env('CONTACT_FROM') ?? 'onboarding@resend.dev';
 
 export const POST: APIRoute = async ({ request }) => {
   if (!request.headers.get('content-type')?.includes('application/json')) {
@@ -32,13 +48,13 @@ export const POST: APIRoute = async ({ request }) => {
     return json({ ok: false, error: 'Invalid email' }, 400);
   }
 
-  const key = process.env.RESEND_API_KEY;
+  const key = env('RESEND_API_KEY');
   if (!key) {
-    // Never report success for a message that was not sent — the visitor would
+    // Never report success for a message that was not sent, the visitor would
     // walk away believing it arrived.
     console.error('[contact] RESEND_API_KEY is not set; message NOT sent:', payload);
     return json(
-      { ok: false, error: `Email isn't configured yet. Please write to ${TO} directly.` },
+      { ok: false, error: `Email isn't configured yet. Please write to ${TO()} directly.` },
       503,
     );
   }
@@ -61,10 +77,10 @@ export const POST: APIRoute = async ({ request }) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: `Roy Heisler Site <${FROM}>`,
-        to: [TO],
+        from: `Roy Heisler Site <${FROM()}>`,
+        to: [TO()],
         reply_to: email,
-        subject: `Enquiry from ${name} — ${payload.hiringFor}`,
+        subject: `Enquiry from ${name}: ${payload.hiringFor}`,
         text,
       }),
     });
@@ -73,14 +89,14 @@ export const POST: APIRoute = async ({ request }) => {
       const detail = await res.text();
       console.error('[contact] Resend rejected the send:', res.status, detail, payload);
       return json(
-        { ok: false, error: `Couldn't send that. Please write to ${TO} directly.` },
+        { ok: false, error: `Couldn't send that. Please write to ${TO()} directly.` },
         502,
       );
     }
   } catch (err) {
     console.error('[contact] send threw:', err, payload);
     return json(
-      { ok: false, error: `Couldn't send that. Please write to ${TO} directly.` },
+      { ok: false, error: `Couldn't send that. Please write to ${TO()} directly.` },
       502,
     );
   }

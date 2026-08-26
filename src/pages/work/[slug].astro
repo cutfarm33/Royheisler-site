@@ -17,7 +17,7 @@ import BtsGrid from '../../components/mdx/BtsGrid.astro';
 import PhotoGrid from '../../components/mdx/PhotoGrid.astro';
 
 // Makes <Chapter>, <MoodBoard>, etc. available inside MDX bodies without
-// requiring the MDX author to import them — brief Step 6, sub-step 3.
+// requiring the MDX author to import them, brief Step 6, sub-step 3.
 // Components referenced from an MDX body must be imported here, not only in the
 // MDX file: Astro only bundles the scoped <style> of components the page itself
 // imports, so an MDX-only import renders unstyled.
@@ -70,7 +70,7 @@ const shootDetailParts = (() => {
       <>
         <header class="case-header max-w-[1400px] mx-auto px-6 md:px-12">
           <p class="case-label label">
-            Case study <span class="case-label-sep">—</span> {project.data.client}, {project.data.year}
+            Case study <span class="case-label-sep">·</span> {project.data.client}, {project.data.year}
           </p>
           <h1 class="display-xl case-title">
             {project.data.title}<span style="color: var(--fg-dim);">.</span>
@@ -220,7 +220,7 @@ const shootDetailParts = (() => {
     margin-bottom: 0;
   }
   /* Text keeps its 68ch measure, but media breaks out to match the width of
-     the hero above it — so a multi-spot film reads as one set, and a photo
+     the hero above it, so a multi-spot film reads as one set, and a photo
      gallery gets the full grid instead of a single column. */
   .project-body :global(.video-embed),
   .project-body :global(.photo-grid) {

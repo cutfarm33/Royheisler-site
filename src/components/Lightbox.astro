@@ -30,7 +30,7 @@
     const count = dlg.querySelector<HTMLElement>('.lb-count')!;
     let index = 0;
 
-    /** Only cells the current filter leaves visible — so arrows stay in-category. */
+    /** Only cells the current filter leaves visible, so arrows stay in-category. */
     const visible = () =>
       [...grid.querySelectorAll<HTMLElement>('.photo-cell')].filter(
         (c) => getComputedStyle(c).display !== 'none',

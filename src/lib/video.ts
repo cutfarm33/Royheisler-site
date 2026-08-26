@@ -16,7 +16,7 @@ export function parseVideoUrl(u: string): ParsedVideo {
       const parts = url.pathname.split('/').filter(Boolean);
       // Forms: vimeo.com/{id}, vimeo.com/{id}/{hash} (unlisted),
       // player.vimeo.com/video/{id}[?h={hash}]. Take the last numeric segment as
-      // the id — the trailing segment on an unlisted URL is the privacy hash.
+      // the id, the trailing segment on an unlisted URL is the privacy hash.
       const idIndex = parts.findLastIndex((p) => /^\d+$/.test(p));
       if (idIndex === -1) return { host: 'vimeo', id: null, hash: null };
       const next = parts[idIndex + 1];

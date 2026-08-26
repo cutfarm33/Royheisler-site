@@ -8,7 +8,7 @@ const isActive = (href: string) => {
 
 <nav id="site-nav" class="fixed inset-x-0 top-0 z-50" transition:persist>
   <div class="max-w-[1400px] mx-auto px-6 md:px-12 h-16 flex items-center justify-between">
-    <a href="/" class="wordmark" aria-label="Roy Heisler — home">Roy Heisler</a>
+    <a href="/" class="wordmark" aria-label="Roy Heisler, home">Roy Heisler</a>
     <div class="nav-right">
       <div id="nav-links" class="nav-links">
         <a href="/" class:list={['label nav-link', { 'is-active': isActive('/') }]}>Video</a>
@@ -79,7 +79,7 @@ const isActive = (href: string) => {
       try {
         localStorage.setItem('theme', next);
       } catch (e) {
-        /* storage unavailable — the choice just won't persist */
+        /* storage unavailable, the choice just won't persist */
       }
       syncToggle();
     });
@@ -112,7 +112,7 @@ const isActive = (href: string) => {
     btn.addEventListener('click', () =>
       nav.classList.contains('menu-open') ? close() : open(),
     );
-    // Tapping a link should dismiss it — with ClientRouter the page swaps
+    // Tapping a link should dismiss it, with ClientRouter the page swaps
     // without a reload, so the panel would otherwise stay open.
     document.getElementById('nav-links')?.addEventListener('click', (e) => {
       if ((e.target as HTMLElement).closest('a')) close();
@@ -128,7 +128,7 @@ const isActive = (href: string) => {
 
   /**
    * The nav is transition:persist, so it survives view-transition navigations
-   * intact — including the is-active classes rendered on the *first* page it
+   * intact, including the is-active classes rendered on the *first* page it
    * was served with. They have to be recomputed from the current URL, using the
    * same rule as the server: exact match, or a section prefix.
    */
@@ -184,7 +184,7 @@ const isActive = (href: string) => {
     gap: 2rem;
   }
 
-  /* Hamburger — hidden on desktop, where the links show inline. */
+  /* Hamburger, hidden on desktop, where the links show inline. */
   .nav-toggle {
     display: none;
     position: relative;
@@ -219,7 +219,7 @@ const isActive = (href: string) => {
     .nav-right {
       gap: 0.5rem;
     }
-    /* Full-height panel rather than a dropdown — the nav is fixed, so a
+    /* Full-height panel rather than a dropdown, the nav is fixed, so a
        dropdown would sit over content and scroll away with it. */
     .nav-links {
       position: fixed;

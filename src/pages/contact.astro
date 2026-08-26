@@ -105,7 +105,7 @@ const timelineOptions = ['0–2 weeks', '1 month', '1 quarter', 'Later', 'Ongoin
         });
         const body = await res.json().catch(() => ({}));
         if (res.ok && body?.ok) {
-          setStatus('Thanks — I will get back to you soon.', 'ok');
+          setStatus('Thanks. I will get back to you soon.', 'ok');
           form.reset();
         } else {
           setStatus(body?.error || 'Something went wrong. Please email directly.', 'err');

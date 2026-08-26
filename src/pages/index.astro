@@ -47,7 +47,7 @@ const projects = await getProjectsForIndex();
   }
   /* Filter via data-attribute on the grid, set by FilterPills.astro's script.
      The tiles are rendered by ProjectTile.astro and carry *its* scope hash, so
-     the child half of these selectors must be :global() — otherwise Astro scopes
+     the child half of these selectors must be :global(), otherwise Astro scopes
      it to this page's hash and it matches nothing. */
   .work-grid[data-filter="story"] > :global(:not([data-category="story"])) { display: none; }
   .work-grid[data-filter="commercial"] > :global(:not([data-category="commercial"])) { display: none; }

@@ -12,7 +12,7 @@ export async function getAllProjects(): Promise<Project[]> {
 /**
  * Order for the /work grid: projects with an explicit `order` come first, in
  * that order; everything else follows newest-first. Kept separate from
- * getAllProjects() so the homepage news feed stays strictly chronological —
+ * getAllProjects() so the homepage news feed stays strictly chronological ,
  * it prints a date next to each row, so a manual order would read as wrong.
  */
 /** Disciplines that have their own nav section rather than a tile on /work. */
@@ -33,7 +33,7 @@ export async function getProjectsForIndex(): Promise<Project[]> {
 }
 
 /**
- * Brief Section 5: "Enforce — exactly one project may be featured: true at a
+ * Brief Section 5: "Enforce, exactly one project may be featured: true at a
  * time. Throw a build error otherwise." This helper is called from the
  * homepage, so the error surfaces at build.
  */
@@ -42,7 +42,7 @@ export async function getFeaturedProject(): Promise<Project> {
   if (featured.length !== 1) {
     const names = featured.map((p) => p.id).join(', ') || '(none)';
     throw new Error(
-      `Content error: expected exactly one project with featured: true, found ${featured.length} — ${names}`,
+      `Content error: expected exactly one project with featured: true, found ${featured.length}: ${names}`,
     );
   }
   return featured[0];
