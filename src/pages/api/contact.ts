@@ -89,7 +89,13 @@ export const POST: APIRoute = async ({ request }) => {
       const detail = await res.text();
       console.error('[contact] Resend rejected the send:', res.status, detail, payload);
       return json(
-        { ok: false, error: `Couldn't send that. Please write to ${TO()} directly.` },
+        {
+          ok: false,
+          error: `Couldn't send that. Please write to ${TO()} directly.`,
+          // Status only, never the body: it can name the account's own address.
+          // 401 bad key, 403 sender not permitted to this recipient, 422 bad from/to.
+          providerStatus: res.status,
+        },
         502,
       );
     }
