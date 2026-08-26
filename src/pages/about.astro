@@ -133,6 +133,27 @@ const { headline, portrait, services, clients, press, representation, stills } =
   .about-bio :global(p:last-child) {
     margin-bottom: 0;
   }
+  /* Section headings inside the bio — small caps rather than display type, so
+     they organise the text without competing with the page headline. */
+  .about-bio :global(h2) {
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 500;
+    color: var(--fg-muted);
+    margin-block: 2.75rem 0.85rem;
+  }
+  .about-bio :global(h2:first-child) {
+    margin-top: 0;
+  }
+  .about-bio :global(.about-kicker) {
+    color: var(--accent);
+    margin: 0 0 1.75rem;
+    line-height: 1.7;
+  }
+  .about-bio :global(em) {
+    font-style: italic;
+  }
   .about-bio :global(a) {
     color: var(--accent);
     border-bottom: 1px solid var(--accent-line);
