@@ -19,6 +19,7 @@ const projects = defineCollection({
         z.enum([
           'directed',
           'dp',
+          'aerial',
           'edited',
           'portrait',
           'product-photo',

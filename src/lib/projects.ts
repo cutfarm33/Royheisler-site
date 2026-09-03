@@ -48,12 +48,13 @@ export async function getFeaturedProject(): Promise<Project> {
   return featured[0];
 }
 
-const filmDisciplines = new Set(['directed', 'dp', 'edited']);
+const filmDisciplines = new Set(['directed', 'dp', 'aerial', 'edited']);
 
 export function disciplineLabel(d: Project['data']['disciplines'][number]): string {
   const map: Record<string, string> = {
     directed: 'Directed',
     dp: 'DP',
+    aerial: 'Aerial / drone',
     edited: 'Edited',
     portrait: 'Portraits',
     'product-photo': 'Product photography',
